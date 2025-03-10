@@ -1,7 +1,7 @@
 #include "common.h"
 extern int yyparse();
 extern FILE *yyin;
-extern int yydebug;
+// extern int yydebug;
 extern void yyrestart(FILE *input_file);
 extern int synerror_count;
 extern int lexerror_count;
@@ -20,7 +20,7 @@ int main(int argc, char **argv)
         return 1;
     }
     yyrestart(f);
-    yydebug = 1;
+    // yydebug = 1;
     yyparse();
 
     if (lexerror_count == 0 && synerror_count == 0)

@@ -1,0 +1,10 @@
+lab1/Tests/*
+lab1/Code/lex.yy.c
+lab1/Code/syntax.tab.h
+lab1/Code/syntax.tab.c
+lab1/Code/syntax.tab.o
+lab1/Code/log.txt
+lab1/Code/output.txt
+lab1/Code/parser
+lab1/Code/syntax.output
+lab1/Tests/*
