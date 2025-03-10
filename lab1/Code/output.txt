@@ -1,0 +1,7 @@
+Error type A at Line 2: Illegal ID.
+Error type B at Line 5: syntax error.
+Error type B at Line 7: syntax error.
+Error type B at Line 10: syntax Comp_LC error.
+Error type B at Line 12: syntax error.
+Error type B at Line 16: syntax error.
+Error type B at Line 18: syntax Comp_LC error.
