@@ -153,6 +153,7 @@ DefList : Def DefList       { $$=create_node("DefList",type_nter, @$.first_line,
     ;
 
 Def : Specifier DecList SEMI    { $$=create_node("Def",type_nter, @$.first_line,3,$1,$2,$3); } //单个局部定义,由标识符+声明列表+;组成
+    | error SEMI                  { yyerror("syntax Def error"); yyerrok;}
     ;
 
 DecList : Dec               { $$=create_node("DecList",type_nter, @$.first_line,1,$1); }//声明列表,由若干单个声明组成，中间由,连接
@@ -183,6 +184,9 @@ Exp : Exp ASSIGNOP Exp      { $$=create_node("Exp",type_nter, @$.first_line,3,$1
     | INT                   { $$=create_node("Exp",type_nter, @$.first_line,1,$1); }
     | FLOAT                 { $$=create_node("Exp",type_nter, @$.first_line,1,$1); }
     | STRING                { $$=create_node("Exp",type_nter, @$.first_line,1,$1); }
+    | error RP              { yyerror("Syntax error in expression with parentheses"); yyerrok; }
+    | error RB              { yyerror("Syntax error in array index"); yyerrok; }
+    | Exp ASSIGNOP error    { yyerror("Invalid right operand in assignment"); yyerrok; }
     ;
 Args : Exp COMMA Args       { $$=create_node("Args",type_nter, @$.first_line,3,$1,$2,$3); }//非空参数列表,由","间隔，每一个参数是一个exp
     | Exp                   { $$=create_node("Args",type_nter, @$.first_line,1,$1); }
