@@ -38,7 +38,7 @@
 # define YY_YY_SYNTAX_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 1
+# define YYDEBUG 0
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -52,31 +52,32 @@ extern int yydebug;
     INT = 258,
     FLOAT = 259,
     ID = 260,
-    SEMI = 261,
-    COMMA = 262,
-    ASSIGNOP = 263,
-    RELOP = 264,
-    PLUS = 265,
-    MINUS = 266,
-    STAR = 267,
-    DIV = 268,
-    AND = 269,
-    OR = 270,
-    NOT = 271,
-    DOT = 272,
-    TYPE = 273,
-    LP = 274,
-    RP = 275,
-    LB = 276,
-    RB = 277,
-    LC = 278,
-    RC = 279,
-    STRUCT = 280,
-    RETURN = 281,
-    IF = 282,
-    ELSE = 283,
-    WHILE = 284,
-    LOWER_THAN_ELSE = 285
+    STRING = 261,
+    SEMI = 262,
+    COMMA = 263,
+    ASSIGNOP = 264,
+    RELOP = 265,
+    PLUS = 266,
+    MINUS = 267,
+    STAR = 268,
+    DIV = 269,
+    AND = 270,
+    OR = 271,
+    NOT = 272,
+    DOT = 273,
+    TYPE = 274,
+    LP = 275,
+    RP = 276,
+    LB = 277,
+    RB = 278,
+    LC = 279,
+    RC = 280,
+    STRUCT = 281,
+    RETURN = 282,
+    IF = 283,
+    ELSE = 284,
+    WHILE = 285,
+    LOWER_THAN_ELSE = 286
   };
 #endif
 
@@ -84,11 +85,11 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 24 "syntax.y"
+#line 11 "./syntax.y"
 
     struct Node* node;
 
-#line 92 "syntax.tab.h"
+#line 93 "./syntax.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -22,7 +22,7 @@
         yylval.node=create_node(name,type,fline,0);
     }
 
-    void print_error(char type , int line, char* msg){
+    void print_error(char type , int line, const char* msg){
         if(type=='A')
         {
             lexerror_count++;
@@ -37,11 +37,12 @@
 %}
 
 %option yylineno
+%x COMMENT
 blank     [ \t\r\f\v]+
 digit     [0-9]
 letter    [_a-zA-Z]
 INT       0|([1-9]{digit}*)
-FLOAT     {digit}+\.{digit}+
+FLOAT     {digit}+"."{digit}+|{digit}*"."{digit}+[eE][+-]?{digit}+|{digit}+"."{digit}*[eE][+-]?{digit}+
 ID        {letter}({digit}|{letter})*
 OCT       0[0-7]+
 HEX       0[Xx][0-9a-fA-F]+
@@ -69,7 +70,7 @@ RETURN    return
 IF        if
 ELSE      else
 WHILE     while
-
+STRING      \"([^\"\n]|\\\")*\"
 
 
 
@@ -103,14 +104,24 @@ WHILE     while
 {INT}         {create_lexnode("INT",type_int,yylineno);(yylval.node)->val.int_val=atoi(yytext);return INT;}
 {OCT}         {create_lexnode("INT",type_int,yylineno);(yylval.node)->val.int_val=(int)strtol(yytext,NULL,0);return INT;}
 {HEX}         {create_lexnode("INT",type_int,yylineno);(yylval.node)->val.int_val=(int)strtol(yytext,NULL,0);return INT;}
+{STRING}      {create_lexnode("STRING",type_id,yylineno);return STRING;}
+
 0[0-7]*[89_a-zA-Z]+[0-7]*   {print_error('A',yylineno,"Illegal OCT");return INT;}
 0[Xx][0-9a-fA-F]*[g-zG-Z]*[0-9a-fA-F]*    {print_error('A',yylineno,"Illegal HEX");return INT;}
+
 {ID}          {create_lexnode("ID",type_id,yylineno);strcpy((yylval.node)->val.id_val,yytext);return ID;}
 {digit}+({letter}|{digit})*           {print_error('A',yylineno,"Illegal ID");return ID;}           
+
 \n            {yycolumn=1;}
 {blank}       {}
-.             {print_error('A',yylineno,"Illegal character");}
 
+
+"//"[^\n]*    {}
+"/*"          {BEGIN(COMMENT);}
+<COMMENT>"*/" { BEGIN(INITIAL); }
+<COMMENT>\n   {yycolumn=1;}
+<COMMENT>.    {}
+.             {print_error('A',yylineno,"Illegal character");}
 
 %%
 
