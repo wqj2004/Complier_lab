@@ -118,7 +118,7 @@ STRING      \"([^\"\n]|\\\")*\"
 
 "//"[^\n]*    {}
 "/*"          {BEGIN(COMMENT);}
-<COMMENT>"*/" { BEGIN(INITIAL); }
+<COMMENT>"*/" {BEGIN(INITIAL);}
 <COMMENT>\n   {yycolumn=1;}
 <COMMENT>.    {}
 .             {print_error('A',yylineno,"Illegal character");}
