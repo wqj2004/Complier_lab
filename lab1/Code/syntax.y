@@ -87,7 +87,6 @@ ExtDefList : ExtDef ExtDefList  { $$=create_node("ExtDefList",type_nter,@$.first
 ExtDef : Specifier ExtDecList SEMI  { $$=create_node("ExtDef",type_nter,@$.first_line,3,$1,$2,$3); } //外部定义要么是一个类型声明+外部(变量)声明
     | Specifier SEMI                { $$=create_node("ExtDef",type_nter,@$.first_line,2,$1,$2); } //要么是一个类型声明+;(一般和struct一起使用)
     | Specifier FunDec CompSt       { $$=create_node("ExtDef",type_nter,@$.first_line,3,$1,$2,$3); }//要么是一个类型声明+函数声明+{...}
-    | error SEMI                    {yyerror("syntax vardef error"); yyerrok;}
     ;  
 
 ExtDecList : VarDec             { $$=create_node("ExtDecList",type_nter, @$.first_line,1,$1); }  //外部声明要么是一个单独的变量声明
@@ -114,12 +113,12 @@ Tag : ID    { $$=create_node("Tag",type_nter, @$.first_line,1,$1); }
 //Declarators
 VarDec : ID                 { $$=create_node("VarDec",type_nter, @$.first_line,1,$1); } //普通变量
     | VarDec LB INT RB      { $$=create_node("VarDec",type_nter, @$.first_line,4,$1,$2,$3,$4); }//数组变量
-    | error RB              { yyerror("syntax VarDec error"); yyerrok;}
+    | error RB              { yyerror(" VarDec "); yyerrok; }
     ; 
 
 FunDec : ID LP VarList RP   { $$=create_node("FunDec",type_nter, @$.first_line,4,$1,$2,$3,$4); } //有参数的函数声明
     | ID LP RP              { $$=create_node("FunDec",type_nter, @$.first_line,3,$1,$2,$3); }    //无参数的函数声明
-    | error RP              { yyerror("syntax FunDec error"); yyerrok;}
+    | error RP              { yyerror(" FunDec "); yyerrok; }
     ;
 
 VarList : ParamDec COMMA VarList    { $$=create_node("VarList",type_nter, @$.first_line,3,$1,$2,$3); }//多个变量，采用递归定义
@@ -127,11 +126,12 @@ VarList : ParamDec COMMA VarList    { $$=create_node("VarList",type_nter, @$.fir
     ;
 
 ParamDec : Specifier VarDec     { $$=create_node("ParamDec",type_nter, @$.first_line,2,$1,$2); } //单个参数声明的具体形式:标识符+变量
+    | error Specifier          { yyerror(" ParamDec "); yyerrok; }
     ;
 
 /* Statements */
 CompSt : LC DefList StmtList RC     { $$=create_node("CompSt",type_nter, @$.first_line,4,$1,$2,$3,$4); }//复合语句
-    | error RC                      { yyerror("syntax Comp_LC error"); yyerrok;}
+    | error RC                      { yyerror(" CompSt "); yyerrok; }
     ;
 
 StmtList : Stmt StmtList    { $$=create_node("StmtList",type_nter, @$.first_line,2,$1,$2); }//语句列表
@@ -141,10 +141,11 @@ StmtList : Stmt StmtList    { $$=create_node("StmtList",type_nter, @$.first_line
 Stmt : Exp SEMI                                 { $$=create_node("Stmt",type_nter, @$.first_line,2,$1,$2); }//表达式
     | CompSt                                    { $$=create_node("Stmt",type_nter, @$.first_line,1,$1); }//复合语句(嵌套)
     | RETURN Exp SEMI                           { $$=create_node("Stmt",type_nter, @$.first_line,3,$1,$2,$3); }//返回语句
+    | IF error Stmt %prec ELSE                  { yyerror(" Stmt "); yyerrok; }
     | IF LP Exp RP Stmt %prec LOWER_THAN_ELSE   { $$=create_node("Stmt",type_nter, @$.first_line,5,$1,$2,$3,$4,$5); }//if语句,无else
     | IF LP Exp RP Stmt ELSE Stmt               { $$=create_node("Stmt",type_nter, @$.first_line,7,$1,$2,$3,$4,$5,$6,$7); }//if...else
     | WHILE LP Exp RP Stmt                      { $$=create_node("Stmt",type_nter, @$.first_line,5,$1,$2,$3,$4,$5); }//while语句 
-    | error SEMI                                { yyerror("syntax Stmt error"); yyerrok;}
+    | error SEMI                                { yyerror(" Stmt "); yyerrok; }
     ;
 
 // Local Definitions
@@ -153,7 +154,6 @@ DefList : Def DefList       { $$=create_node("DefList",type_nter, @$.first_line,
     ;
 
 Def : Specifier DecList SEMI    { $$=create_node("Def",type_nter, @$.first_line,3,$1,$2,$3); } //单个局部定义,由标识符+声明列表+;组成
-    | error SEMI                  { yyerror("syntax Def error"); yyerrok;}
     ;
 
 DecList : Dec               { $$=create_node("DecList",type_nter, @$.first_line,1,$1); }//声明列表,由若干单个声明组成，中间由,连接
@@ -184,19 +184,18 @@ Exp : Exp ASSIGNOP Exp      { $$=create_node("Exp",type_nter, @$.first_line,3,$1
     | INT                   { $$=create_node("Exp",type_nter, @$.first_line,1,$1); }
     | FLOAT                 { $$=create_node("Exp",type_nter, @$.first_line,1,$1); }
     | STRING                { $$=create_node("Exp",type_nter, @$.first_line,1,$1); }
-    | error RP              { yyerror("Syntax error in expression with parentheses"); yyerrok; }
-    | error RB              { yyerror("Syntax error in array index"); yyerrok; }
-    | Exp ASSIGNOP error    { yyerror("Invalid right operand in assignment"); yyerrok; }
     ;
+
 Args : Exp COMMA Args       { $$=create_node("Args",type_nter, @$.first_line,3,$1,$2,$3); }//非空参数列表,由","间隔，每一个参数是一个exp
     | Exp                   { $$=create_node("Args",type_nter, @$.first_line,1,$1); }
     ;
-%%
 
+%%
 void yyerror(char* msg)
 {
+    if (msg == NULL);
     synerror_count++;
-    print_error('B',yylineno,msg);
+    print_error('B',yylineno,"system error");
 }
 
 
