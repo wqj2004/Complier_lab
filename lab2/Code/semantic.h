@@ -13,37 +13,47 @@ typedef enum
     FLOAT_TYPE
 } BasicType;
 
+typedef enum
+{
+    undefined,
+    defined
+} Funstate;
+
 typedef enum _errorType
 {
-    UNDEF_VAR = 1,        // Undefined Variable
-    UNDEF_FUNC,           // Undefined Function
-    REDEF_VAR,            // Redefined Variable
-    REDEF_FUNC,           // Redefined Function
-    TYPE_MISMATCH_ASSIGN, // Type mismatchedfor assignment.
-    LEFT_VAR_ASSIGN,      // The left-hand side of an assignment must be a variable.
-    TYPE_MISMATCH_OP,     // Type mismatched for operands.
-    TYPE_MISMATCH_RETURN, // Type mismatched for return.
-    FUNC_AGRC_MISMATCH,   // Function is not applicable for arguments
-    NOT_A_ARRAY,          // Variable is not a Array
-    NOT_A_FUNC,           // Variable is not a Function
-    NOT_A_INT,            // Variable is not a Integer
-    ILLEGAL_USE_DOT,      // Illegal use of "."
-    NONEXISTFIELD,        // Non-existentfield
-    REDEF_FEILD,          // Redefined field
-    DUPLICATED_NAME,      // Duplicated name
-    UNDEF_STRUCT          // Undefined structure
+    UNDEF_VAR = 1,         // Undefined Variable
+    UNDEF_FUNC,            // Undefined Function
+    REDEF_VAR,             // Redefined Variable
+    REDEF_FUNC,            // Redefined Function
+    TYPE_MISMATCH_ASSIGN,  // Type mismatchedfor assignment.
+    LEFT_VAR_ASSIGN,       // The left-hand side of an assignment must be a variable.
+    TYPE_MISMATCH_OP,      // Type mismatched for operands.
+    TYPE_MISMATCH_RETURN,  // Type mismatched for return.
+    FUNC_AGRC_MISMATCH,    // Function is not applicable for arguments
+    NOT_A_ARRAY,           // Variable is not a Array
+    NOT_A_FUNC,            // Variable is not a Function
+    NOT_A_INT,             // Variable is not a Integer
+    ILLEGAL_USE_DOT,       // Illegal use of "."
+    NONEXISTFIELD,         // Non-existentfield
+    REDEF_FIELD,           // Redefined field
+    DUPLICATED_NAME,       // Duplicated name
+    UNDEF_STRUCT,          // Undefined structure
+    ONLY_DECLARED_FUNC,    // Only declared function
+    DISMATCH_DECLARE_FUNC, // Function declaration mismatch
+    NEST_FUNC_DEF,         // Function defined in a block
 } ErrorType;
+
+typedef enum
+{
+    BASIC,
+    ARRAY,
+    STRUCTURE,
+    FUNCTION,
+} TypeKind;
 
 struct Type_
 {
-    enum
-    {
-        BASIC,
-        ARRAY,
-        STRUCTURE,
-        FUNCTION,
-        STRUCTURE_DEF
-    } kind;
+    TypeKind kind;
     union
     {
         // 基本类型
@@ -62,19 +72,19 @@ struct Type_
             FieldList args; // 参数
             Type ret_type;  // 返回值类型
             int argc;       // 参数数量
-            int state;      // 状态
+            Funstate state; // 状态
             int lineno;     // 行数
         } function;
     } u;
 };
 
 // Struct中每个域的定义
-struct FieldList_
+typedef struct FieldList_
 {
     char *name;     // 域的名字
     Type type;      // 域的类型
     FieldList tail; // 下一个域
-};
+} fieldlist;
 
 // 每个符号的定义
 typedef struct Object
@@ -109,6 +119,28 @@ typedef struct ObjTable
 
 extern ptab table;
 
+static inline void semanticError(ErrorType type, int line, char *msg)
+{
+    printf("Error type %d at Line %d: %s\n", type, line, msg);
+}
+
+// TYPE
+Type newTYPE(TypeKind kind, ...);
+Type copyTYPE(Type type);
+int equalType(Type type1, Type type2);
+void freeType(Type type);
+
+// Field
+FieldList newFieldList(char *name, Type type);
+FieldList copyFieldList(FieldList field);
+void append_FieldList(FieldList pField, FieldList F_to_append);
+int equalFieldList(FieldList field1, FieldList field2);
+void freeFieldList(FieldList field);
+
+// Object
+pobj newObj(char *name, int st_depth, Type type);
+void freeObj(pobj obj);
+
 // Hashtable
 phash newHash();
 void insert_hashobj(phash hashtab, pobj obj);
@@ -117,13 +149,38 @@ obj *searchhash(phash hashtab, char *name);
 // Stack
 pstack newStack();
 void insert_stackobj(pstack stack, pobj obj);
-void addStackDepth(pstack stack);
-void delete_curstack(pstack stack);
+void incStackDepth(pstack stack);
+void decStackDepth(pstack stack);
 
 // ObjTable
 ptab newTable();
 void insert_tabobj(ptab table, pobj obj);
-void delete_stack(ptab table);
+void delete_stack_curdepth(ptab table);
 obj *searchtab(ptab table, char *name);
+obj *searchtab_func(ptab table, char *name);
+int objConflict(ptab table, pobj obj);
 
-void checkTree(Node *node);
+// SDD
+void Program(Node *node);
+void ExtDefList(Node *node);
+void ExtDef(Node *node);
+void ExtDecList(Node *node, Type deftype);
+pobj FunDec(Node *node, Type rettype, Funstate isdef);
+void VarList(Node *node, Type funtype);
+FieldList ParamDec(Node *node);
+void CompSt(Node *node, pobj funobj);
+void StmtList(Node *node, pobj funobj);
+void Stmt(Node *node, pobj funobj);
+void DefList(Node *node, FieldList structfield);
+void Def(Node *node, FieldList structfield);
+void DecList(Node *node, Type deftype, FieldList structfield);
+void Dec(Node *node, Type deftype, FieldList structfield);
+void *VarDec(Node *node, Type deftype, FieldList structfield);
+Type Exp(Node *node, int *plval);
+int Args(Node *node, FieldList args, int fline);
+
+Type Specifier(Node *node);
+Type StructSpecifier(Node *node);
+
+// utils
+int isStructType(pobj obj);

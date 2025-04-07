@@ -23,7 +23,8 @@ int main(int argc, char **argv)
 
     if (lexerror_count == 0 && synerror_count == 0)
     {
-        checktree(root, 0);
+        newTable();
+        Program(root);
     }
 
     // print_tree(root, 0);
