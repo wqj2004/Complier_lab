@@ -3,7 +3,7 @@
 #define hashsz 0x3fff
 #define max_st_depth 20
 
-hashfn(char *name)
+unsigned hashfn(char *name)
 {
     unsigned val = 0, i;
     for (; *name; ++name)
@@ -279,7 +279,7 @@ void delete_stack_curdepth(ptab table)
     {
         pobj next = cur_obj->stack_next;
         delete_hashobj(table->hashtab, cur_obj);
-        free(cur_obj);
+        free(cur_obj); // freeobj
         cur_obj = next;
     }
     stack->stacklist[cur_depth] = NULL;
@@ -304,6 +304,7 @@ obj *searchtab_func(ptab table, char *name)
     return NULL;
 }
 
+// TODO
 int objConflict(ptab table, pobj obj)
 {
     pobj curobj = searchtab(table->hashtab, obj->name);
@@ -329,6 +330,7 @@ int objConflict(ptab table, pobj obj)
         }
         curobj = curobj->hash_next;
     }
+    return 0;
 }
 
 // Program     : ExtDefList
@@ -336,7 +338,7 @@ void Program(Node *node)
 {
     if (node == NULL)
         return;
-    if (!strcmp('ExtDefList', node->firstchild->name))
+    if (!strcmp("ExtDefList", node->firstchild->name))
     {
         ExtDefList(node->firstchild);
     }
@@ -436,6 +438,7 @@ pobj FunDec(Node *node, Type rettype, Funstate isdef)
             VarList(node->firstchild->nextsib->nextsib, funtype);
         }
         funobj = newObj(node->firstchild->val.id_val, 0, funtype);
+        // 添加一个objConflict
         insert_tabobj(table, funobj);
         return funobj;
     }
@@ -499,7 +502,7 @@ FieldList ParamDec(Node *node)
     Type paramtype = Specifier(node->firstchild);
     FieldList _ = (FieldList)malloc(sizeof(fieldlist));
     FieldList paramfield = (FieldList)VarDec(node->firstchild->nextsib, paramtype, _);
-    free(_);
+    freeFieldList(_);
     return paramfield;
 }
 
@@ -515,6 +518,7 @@ void CompSt(Node *node, pobj funobj)
         while (argv != NULL)
         {
             pobj newobj = newObj(argv->name, table->st->cur_stack_depth, argv->type);
+            // 最好添加ObjConflict
             insert_tabobj(table, newobj);
             argv = argv->tail;
         }
@@ -580,6 +584,7 @@ void Stmt(Node *node, pobj funobj)
     {
         int lval = 0;
         type = Exp(node->firstchild->nextsib->nextsib, &lval);
+        // 注意只能是int类型?
         Node *stmtnode = node->firstchild->nextsib->nextsib->nextsib->nextsib;
         Stmt(stmtnode, funobj);
         if (stmtnode->nextsib)
@@ -650,6 +655,7 @@ void Dec(Node *node, Type deftype, FieldList structfield)
 {
     if (node->firstchild->nextsib == NULL)
     {
+        // VarDec
         if (structfield != NULL)
         {
             // 在结构体内部,需要把每个Dec对应的fieldlist加到structfield的后面串起来
@@ -687,6 +693,7 @@ void Dec(Node *node, Type deftype, FieldList structfield)
     }
     else
     {
+        // VarDec ASSIGNOP Exp
         if (structfield != NULL)
         {
             semanticError(REDEF_FIELD, node->fline, "Assignment in struct");
@@ -701,6 +708,7 @@ void Dec(Node *node, Type deftype, FieldList structfield)
 
                 if (objConflict(table, newobj))
                 {
+                    // TODO
                     semanticError(REDEF_VAR, node->fline, "Redefined variable");
                     freeObj(newobj);
                 }
@@ -807,6 +815,7 @@ void *VarDec(Node *node, Type deftype, FieldList structfield)
 //         | INT               1
 //         | FLOAT             1.0
 //         ;
+// TODO
 Type Exp(Node *node, int *plval)
 {
     int exp1_lval = 0, exp2_lval = 0;
@@ -824,6 +833,7 @@ Type Exp(Node *node, int *plval)
         //         | Exp LB Exp RB     a[b]  左值
         //         | Exp DOT ID        a.b   左值
         exp1_type = Exp(node->firstchild, &exp1_lval);
+        // TODO 添加一个不是a.b的判断
         exp2_type = Exp(node->firstchild->nextsib->nextsib, &exp2_lval);
         if (exp1_type == NULL || exp2_type == NULL)
         {
@@ -865,7 +875,7 @@ Type Exp(Node *node, int *plval)
                 return NULL;
             }
             char *idname = node->firstchild->nextsib->nextsib->val.id_val;
-            FieldList field = exp1_type->u.structure;
+            FieldList field = exp1_type->u.structure->tail;
             while (field != NULL)
             {
                 if (!strcmp(field->name, idname))
@@ -961,9 +971,10 @@ Type Exp(Node *node, int *plval)
             return NULL;
         }
         *plval = 0;
-        if (!strcmp(node->firstchild->name, "MINUS"))
+        // TODO
+        if (!strcmp(node->firstchild->name, "NOT"))
         {
-            return newType(BASIC, INT_TYPE);
+            return newTYPE(BASIC, INT_TYPE);
         }
         return copyTYPE(exp1_type);
     }
@@ -973,6 +984,7 @@ Type Exp(Node *node, int *plval)
         // ID LP RP
         // ID
         pobj idobj = searchtab(table, node->firstchild->val.id_val);
+        // TODO
         if (idobj == NULL || isStructType(idobj))
         {
             if (node->firstchild->nextsib != NULL)
@@ -1155,6 +1167,7 @@ Type StructSpecifier(Node *node)
             pobj structobj = newObj(tagname, 0, rettype);
             if (searchtab(table, tagname))
             {
+                // TODO
                 semanticError(DUPLICATED_NAME, node->fline, "Redefined struct");
                 freeObj(structobj);
             }
