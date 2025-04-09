@@ -1,4 +1,10 @@
-int main() {
-  int err[];
-  return 0;
+struct Position
+{
+    float x, y;
+};
+
+int main()
+{
+    int i; 
+    i.x;
 }

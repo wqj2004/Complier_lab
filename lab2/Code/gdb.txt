@@ -1,0 +1,10 @@
+Undefined command: "silent".  Try "help".
+Undefined command: "repeat".  Try "help".
+Type commands for definition of "s20".
+End with a line saying just "end".
+Single stepping until exit from function main,
+which has no line number information.
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000555555557239 in Stmt ()
+1	iofopen.c: No such file or directory.

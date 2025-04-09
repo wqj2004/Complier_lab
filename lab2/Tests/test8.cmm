@@ -1,0 +1,5 @@
+float main()
+{
+    int i,j;
+    return j;
+}
