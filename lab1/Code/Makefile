@@ -42,7 +42,7 @@ debug:
 # 定义的一些伪目标
 .PHONY: clean test pack produce clean-pack
 test:
-	./parser ../Test/test1.cmm
+	./parser ../Tests/A-1.cmm
 clean:
 	rm -f parser lex.yy.c syntax.tab.c syntax.tab.h syntax.output
 	rm -f $(OBJS) $(OBJS:.o=.d)

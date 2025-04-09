@@ -79,6 +79,9 @@ Type newTYPE(TypeKind kind, ...)
 
 Type copyTYPE(Type type)
 {
+    if(type == NULL){
+        return NULL;
+    }
     TypeKind kind = type->kind;
 
     switch (kind)
@@ -393,6 +396,24 @@ void showTable()
     return;
 }
 
+void DetectFunc_Undefined(){
+    stack* st= table->st;
+    pobj * stacklist =st->stacklist;
+    pobj cur_obj = stacklist[0];
+    assert(st->cur_stack_depth == 0);
+    while(cur_obj !=NULL){
+        Type cur_type = cur_obj->type;
+        if(cur_type->kind == FUNCTION){
+            if(cur_type->u.function.state == undefined){
+                semanticError(ONLY_DECLARED_FUNC, cur_type->u.function.lineno, "Undefined Function");
+            }
+        }
+        cur_obj = cur_obj->stack_next;
+    }
+
+    return ;
+}
+
 // Program     : ExtDefList
 void Program(Node *node)
 {
@@ -407,6 +428,7 @@ void Program(Node *node)
     {   
         ExtDefList(node1);
     }
+    DetectFunc_Undefined();
 }
 
 // ExtDefList : ExtDef ExtDefList
@@ -524,7 +546,7 @@ pobj FunDec(Node *node, Type rettype, Funstate isdef)
         else
         {
             Type funtype = newTYPE(FUNCTION, 0, NULL, rettype, isdef, node->fline);
-            if (!STRcmp(node->firstchild->nextsib->nextsib->val.id_val, "VarList"))
+            if (!STRcmp(node->firstchild->nextsib->nextsib->name, "VarList"))
             {
                 VarList(node->firstchild->nextsib->nextsib, funtype);
             }
@@ -914,7 +936,6 @@ Type Exp(Node *node, int *plval)
         //         | Exp LB Exp RB     a[b]  左值
         //         | Exp DOT ID        a.b   左值
         exp1_type = Exp(node->firstchild, &exp1_lval);
-        // TODO 添加一个不是a.b的判断
         int tmp = STRcmp(node->firstchild->nextsib->name, "DOT");
         if (tmp)
         {
@@ -1030,6 +1051,11 @@ Type Exp(Node *node, int *plval)
                 semanticError(TYPE_MISMATCH_OP, node->fline, "Type mismatched for operator");
                 return NULL;
             }
+            else if(exp1_type->u.basic != exp2_type->u.basic)
+            {
+                semanticError(TYPE_MISMATCH_OP, node->fline, "Type mismatched for operator");
+                return NULL;
+            }
             char *opname = opnode->name;
             if (!STRcmp(opname, "AND") || !STRcmp(opname, "OR") || !STRcmp(opname, "RELOP"))
             {
@@ -1078,7 +1104,7 @@ Type Exp(Node *node, int *plval)
         // ID
         pobj idobj = searchtab(table, node->firstchild->val.id_val);
         // TODO
-        if (idobj == NULL || isStructType(idobj))
+        if (idobj == NULL)/////////CHANGE  
         {
             if (node->firstchild->nextsib != NULL)
             {
@@ -1151,7 +1177,7 @@ int Args(Node *node, FieldList args, int fline)
         Type argtype = Exp(curnode->firstchild, &lval);
         if (!equalType(argtype, curarg->type))
         {
-            semanticError(DISMATCH_DECLARE_FUNC, fline, "Function declaration mismatch");
+            semanticError(FUNC_AGRC_MISMATCH, fline, "Function type mismatch");
             return 0;
         }
         if (curnode->firstchild->nextsib != NULL)
@@ -1166,7 +1192,7 @@ int Args(Node *node, FieldList args, int fline)
     }
     if (curnode != NULL || curarg != NULL)
     {
-        semanticError(DISMATCH_DECLARE_FUNC, fline, "Function declaration mismatch");
+        semanticError(FUNC_AGRC_MISMATCH, fline, "Function type mismatch");
         return 0;
     }
     return 1;
