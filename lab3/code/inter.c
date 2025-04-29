@@ -661,9 +661,11 @@ void translateCond(Node* node, pOperand label_true, pOperand label_false) {
         ifGotoInstr->u.if_goto.y = t2;
         ifGotoInstr->u.if_goto.z = label_true;
         // Copy the relop from the node (==, !=, >, <, >=, <=)
+        ifGotoInstr->u.if_goto.relop = (char*)malloc(10 * sizeof(char));
+        ifGotoInstr->u.if_goto.relop[0] = '\0'; // Initialize to empty string
         printf("strcpy to [%s] \n", ifGotoInstr->u.if_goto.relop);
         printf("cpy from [%s] \n", relop->val.id_val);
-        strncpy(ifGotoInstr->u.if_goto.relop, relop->val.id_val, 3);
+        strcpy(ifGotoInstr->u.if_goto.relop, relop->val.id_val);
         printf("cpy success\n");
         appendInstruction(ifGotoInstr);
         

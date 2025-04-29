@@ -76,7 +76,7 @@ STRING      \"([^\"\n]|\\\")*\"
 
 %%
 
-{RELOP}       {create_lexnode("RELOP",type_ch,yylineno);return RELOP;}
+{RELOP}       {create_lexnode("RELOP",type_ch,yylineno);strcpy((yylval.node)->val.id_val,yytext);return RELOP;}
 {SEMI}        {create_lexnode("SEMI",type_ch,yylineno);return SEMI;}
 {COMMA}       {create_lexnode("COMMA",type_ch,yylineno);return COMMA;}
 {ASSIGNOP}    {create_lexnode("ASSIGNOP",type_ch,yylineno);return ASSIGNOP;}
