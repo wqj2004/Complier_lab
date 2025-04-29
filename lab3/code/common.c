@@ -51,7 +51,7 @@ Node *create_node(char *nodename, dtype type, int fline, int child_num, ...)
     return node;
 }
 
-void print_tree(Node *root, int dep)
+void print_tree(Node *root, int dep, FILE* stream__)
 {
     if (root == NULL)
     {
@@ -59,35 +59,35 @@ void print_tree(Node *root, int dep)
     }
     for (int i = 0; i < dep; i++)
     {
-        printf("  ");
+        fprintf(stream__, "  ");
     }
     if (root->type == type_nter)
     {
-        printf("%s (%d)\n", root->name, root->fline);
+        fprintf(stream__,"%s (%d)\n", root->name, root->fline);
     }
     else
     {
         if (root->type == type_ch)
         {
-            printf("%s\n", root->name);
+            fprintf(stream__,"%s\n", root->name);
         }
         else if (root->type == type_float)
         {
-            printf("%s: %f\n", root->name, root->val.float_val);
+            fprintf(stream__,"%s: %f\n", root->name, root->val.float_val);
         }
         else if ((root->type == type_id) || (root->type == type_type))
         {
-            printf("%s: %s\n", root->name, root->val.id_val);
+            fprintf(stream__,"%s: %s\n", root->name, root->val.id_val);
         }
         else if (root->type == type_int)
         {
-            printf("%s: %d\n", root->name, root->val.int_val);
+            fprintf(stream__,"%s: %d\n", root->name, root->val.int_val);
         }
         else
         {
-            printf("%s\n", root->name);
+            fprintf(stream__,"%s\n", root->name);
         }
     }
-    print_tree(root->firstchild, dep + 1);
-    print_tree(root->nextsib, dep);
+    print_tree(root->firstchild, dep + 1, stream__);
+    print_tree(root->nextsib, dep, stream__);
 }

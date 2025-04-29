@@ -38,6 +38,6 @@ char *copystr(char *str);
 
 Node *create_node(char *nodename, dtype type, int fline, int child_num, ...);
 
-void print_tree(Node *root, int dep);
+void print_tree(Node *root, int dep, FILE* stream__);
 
 #endif

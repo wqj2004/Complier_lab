@@ -110,6 +110,9 @@ void outputInterCode(FILE* out) {
             case FUNCTION_IR_:
                 fprintf(out, "FUNCTION %s :\n", operandToString(curr->u.singleop.op));
                 break;
+            case FUNCTION:
+                fprintf(out, "FUNCTION %s :\n", operandToString(curr->u.singleop.op));
+                break;
             case ASSIGN:
                 fprintf(out, "%s := %s\n", 
                         operandToString(curr->u.assign.result),
@@ -190,7 +193,7 @@ void outputInterCode(FILE* out) {
                 fprintf(out, "WRITE %s\n", operandToString(curr->u.singleop.op));
                 break;
             default:
-                fprintf(out, "Unknown instruction\n");
+                fprintf(out, "Unknown instruction -> %d\n", curr->kind);
         }
         curr = curr->next;
     }
@@ -207,19 +210,31 @@ void translateProgram(Node* node) {
 // Translate external definitions list
 void translateExtDefList(Node* node) {
     if (!node) return;
-    Node* extDef = node->firstchild;
-    if (extDef)
-        translateExtDef(extDef);
+
+    if (node->name)
+        printf("translateExtDefList-> %s\n", node->name);
+    else 
+        printf("translateExtDefList-> NULL\n");
     
-    Node* nextExtDefList = extDef->nextsib;
-    if (nextExtDefList)
-        translateExtDefList(nextExtDefList);
+    if (!strcmp_safe_(node->name, "ExtDefList")) {
+        Node* extDef = node->firstchild;
+        if (extDef)
+            translateExtDefList(extDef);
+        
+        Node* nextExtDefList = node->nextsib;
+        if (nextExtDefList)
+            translateExtDefList(nextExtDefList);
+    }else {
+        translateExtDef(node);
+    }
 }
 
 // Translate a single external definition
 void translateExtDef(Node* node) {
     if (!node) return;
     
+    printf("translateExtDef-> %s\n", node->name);
+
     Node* specifier = node->firstchild;
     Node* secondChild = specifier->nextsib;
     
@@ -285,8 +300,10 @@ void translateCompSt(Node* node) {
 // Translate definition list
 void translateDefList(Node* node) {
     if (!node) return;
-    Node* def = node->firstchild;
-    
+    //Node* def = node->firstchild;
+    Node *def = node->firstchild;
+    printf("translateDefList-> %s\n", node->name);
+
     while (def) {
         Node* decList = def->firstchild->nextsib;
         if (decList) {
@@ -294,6 +311,8 @@ void translateDefList(Node* node) {
             while (dec) {
                 Node* varDec = dec->firstchild;
                 
+                
+
                 // Check if this is an array declaration
                 if (find_node(varDec, "LB")) {
                     // Handle array allocation (DEC instruction)
@@ -338,7 +357,11 @@ void translateStmtList(Node* node) {
     
     Node* stmt = node->firstchild;
     while (stmt) {
-        translateStmt(stmt);
+        if (!strcmp_safe_(stmt->name, "StmtList")) {
+            translateStmtList(stmt);
+        } else {
+            translateStmt(stmt);
+        }
         stmt = stmt->nextsib;
     }
 }
@@ -347,6 +370,8 @@ void translateStmtList(Node* node) {
 void translateStmt(Node* node) {
     if (!node || !node->firstchild) return;
     
+    printf("translateStmt-> %s\n", node->name);
+
     if (!strcmp_safe_(node->firstchild->name, "Exp")) {
         // Expression statement
         translateExp(node->firstchild, NULL);
@@ -367,6 +392,7 @@ void translateStmt(Node* node) {
     }
     else if (!strcmp_safe_(node->firstchild->name, "IF")) {
         // If statement
+        printf("detected IF\n");
         pOperand label_true = newLabel();
         pOperand label_false = newLabel();
         pOperand label_end = newLabel();
@@ -374,6 +400,8 @@ void translateStmt(Node* node) {
         // Find the condition expression
         Node* exp = node->firstchild->nextsib->nextsib; // Skip IF LP
         
+        printf("translateStmt-> %s\n", exp->name);
+
         // Generate condition code
         translateCond(exp, label_true, label_false);
         
@@ -396,6 +424,8 @@ void translateStmt(Node* node) {
         labelFalseInstr->u.singleop.op = label_false;
         appendInstruction(labelFalseInstr);
         
+        printf("before elseNode\n");
+
         // Check if there's an "else" branch
         Node* elseNode = stmt1->nextsib;
         if (elseNode && !strcmp_safe_(elseNode->name, "ELSE")) {
@@ -407,6 +437,8 @@ void translateStmt(Node* node) {
         pInstruction labelEndInstr = newInstruction(LABEL);
         labelEndInstr->u.singleop.op = label_end;
         appendInstruction(labelEndInstr);
+
+        printf("finish dealing IF\n");
     }
     else if (!strcmp_safe_(node->firstchild->name, "WHILE")) {
         pOperand label_start = newLabel();
@@ -535,53 +567,49 @@ void translateExp(Node* node, pOperand place) {
             translateArgs(args);
         }
         
-        // Function call instruction
-        pInstruction callInstr = newInstruction(CALL);
-        callInstr->u.call.op = newVariable(node->firstchild->val.id_val);
-        callInstr->u.call.result = place ? place : newTemporary();
-        appendInstruction(callInstr);
-    }
-    char* func_name = node->firstchild->val.id_val;
-    
-    if (!strcmp_safe_(func_name, "read")) {
-        // Handle read system call
-        if (place) {
-            pInstruction readInstr = newInstruction(READ);
-            readInstr->u.singleop.op = place;
-            appendInstruction(readInstr);
+        char* func_name = node->firstchild->val.id_val;
+        printf("translateExp-> %s\n", func_name);
+        if (!strcmp_safe_(func_name, "read")) {
+            // Handle read system call
+            if (place) {
+                printf("translateExp-> read (detected)\n");
+                pInstruction readInstr = newInstruction(READ);
+                readInstr->u.singleop.op = place;
+                appendInstruction(readInstr);
+            }
         }
-    }
-    else if (!strcmp_safe_(func_name, "write")) {
-        // Handle write system call - should have one argument
-        if (node->firstchild->nextsib->nextsib && 
-            !strcmp_safe_(node->firstchild->nextsib->nextsib->name, "Args")) {
-            Node* args = node->firstchild->nextsib->nextsib;
-            Node* exp = args->firstchild;
+        else if (!strcmp_safe_(func_name, "write")) {
+            // Handle write system call - should have one argument
+            if (node->firstchild->nextsib->nextsib && 
+                !strcmp_safe_(node->firstchild->nextsib->nextsib->name, "Args")) {
+                Node* args = node->firstchild->nextsib->nextsib;
+                Node* exp = args->firstchild;
+                
+                // Evaluate the expression to be written
+                pOperand t = newTemporary();
+                translateExp(exp, t);
+                
+                // Generate WRITE instruction
+                pInstruction writeInstr = newInstruction(WRITE);
+                writeInstr->u.singleop.op = t;
+                appendInstruction(writeInstr);
+            }
+        }
+        else {
+            // Regular function call
+            if (node->firstchild->nextsib->nextsib && 
+                !strcmp_safe_(node->firstchild->nextsib->nextsib->name, "Args")) {
+                // Function call with arguments
+                Node* args = node->firstchild->nextsib->nextsib;
+                translateArgs(args);
+            }
             
-            // Evaluate the expression to be written
-            pOperand t = newTemporary();
-            translateExp(exp, t);
-            
-            // Generate WRITE instruction
-            pInstruction writeInstr = newInstruction(WRITE);
-            writeInstr->u.singleop.op = t;
-            appendInstruction(writeInstr);
+            // Function call instruction
+            pInstruction callInstr = newInstruction(CALL);
+            callInstr->u.call.op = newVariable(func_name);
+            callInstr->u.call.result = place ? place : newTemporary();
+            appendInstruction(callInstr);
         }
-    }
-    else {
-        // Regular function call
-        if (node->firstchild->nextsib->nextsib && 
-            !strcmp_safe_(node->firstchild->nextsib->nextsib->name, "Args")) {
-            // Function call with arguments
-            Node* args = node->firstchild->nextsib->nextsib;
-            translateArgs(args);
-        }
-        
-        // Function call instruction
-        pInstruction callInstr = newInstruction(CALL);
-        callInstr->u.call.op = newVariable(func_name);
-        callInstr->u.call.result = place ? place : newTemporary();
-        appendInstruction(callInstr);
     }
     // Add more expression types as needed
 }
@@ -615,6 +643,9 @@ void translateCond(Node* node, pOperand label_true, pOperand label_false) {
         node->firstchild->nextsib->nextsib &&
         !strcmp_safe_(node->firstchild->nextsib->name, "RELOP")) {
         // Relational operation: Exp RELOP Exp
+        
+        printf("RELOP detected\n");
+
         Node* exp1 = node->firstchild;
         Node* relop = exp1->nextsib;
         Node* exp2 = relop->nextsib;
@@ -630,7 +661,10 @@ void translateCond(Node* node, pOperand label_true, pOperand label_false) {
         ifGotoInstr->u.if_goto.y = t2;
         ifGotoInstr->u.if_goto.z = label_true;
         // Copy the relop from the node (==, !=, >, <, >=, <=)
+        printf("strcpy to [%s] \n", ifGotoInstr->u.if_goto.relop);
+        printf("cpy from [%s] \n", relop->val.id_val);
         strncpy(ifGotoInstr->u.if_goto.relop, relop->val.id_val, 3);
+        printf("cpy success\n");
         appendInstruction(ifGotoInstr);
         
         pInstruction gotoInstr = newInstruction(GOTO);

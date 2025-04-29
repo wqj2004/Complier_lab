@@ -8,7 +8,8 @@
 
 void syscall_init_() {
     // Create read() function (no arguments, returns int)
-    Type read_type = newTYPE(FUNCTION, 0, NULL, newTYPE(BASIC, INT_TYPE), defined, 0);
+    Type read_ret_type = newTYPE(BASIC, INT_TYPE);
+    Type read_type = newTYPE(FUNCTION, 0, NULL, read_ret_type, defined, 0);
     pobj read_obj = newObj("read", 0, read_type);
     insert_tabobj(table, read_obj);
     
@@ -19,7 +20,10 @@ void syscall_init_() {
     pobj write_obj = newObj("write", 0, write_type);
     insert_tabobj(table, write_obj);
 }
+
+// 如果相同就返回0，如果不同返回1或者-1
 int strcmp_safe_(const char *_Str1,const char *_Str2){
+    /*如果相同返回0*/
     if(_Str1 ==_Str2)
         return 0;
     if(_Str1 == NULL || _Str2 == NULL)

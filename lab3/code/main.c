@@ -39,6 +39,7 @@ int main(int argc, char **argv)
         }
     }
 
-    // print_tree(root, 0);
+    FILE *AST = fopen("AST.txt", "w");
+    print_tree(root, 0, AST);
     return 0;
 }
