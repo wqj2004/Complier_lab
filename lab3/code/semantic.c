@@ -1,7 +1,7 @@
 #include "semantic.h"
 #include <assert.h>
 
-#define debuger 1
+#define debuger 0
 
 #define hashsz 0x3fff
 #define max_st_depth 20
@@ -392,7 +392,7 @@ int objConflict(ptab table, pobj obj)
 
 void showTable()
 {
-    //if(!debuger)return;
+    if(!debuger)return;
     phash hashtab = table->hashtab;
     pobj *objlist = hashtab->hashlist;
     

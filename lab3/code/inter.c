@@ -210,11 +210,6 @@ void translateProgram(Node* node) {
 // Translate external definitions list
 void translateExtDefList(Node* node) {
     if (!node) return;
-
-    if (node->name)
-        printf("translateExtDefList-> %s\n", node->name);
-    else 
-        printf("translateExtDefList-> NULL\n");
     
     if (!strcmp_safe_(node->name, "ExtDefList")) {
         Node* extDef = node->firstchild;
@@ -237,8 +232,6 @@ void translateExtDefList(Node* node) {
 // Translate a single external definition
 void translateExtDef(Node* node) {
     if (!node) return;
-    
-    printf("translateExtDef-> %s\n", node->name);
 
     Node* specifier = node->firstchild;
     Node* secondChild = specifier->nextsib;
@@ -307,7 +300,6 @@ void translateDefList(Node* node) {
     if (!node) return;
     //Node* def = node->firstchild;
     Node *def = node->firstchild;
-    printf("translateDefList-> %s\n", node->name);
 
     while (def) {
         Node* decList = def->firstchild->nextsib;
@@ -473,7 +465,6 @@ void translateStmt(Node* node) {
 // Translate expression
 void translateExp(Node* node, pOperand place) {
     if (!node) return;
-    printf("translateExp-> %s\n", node->name);
     // INT常量
     if (!strcmp_safe_(node->firstchild->name, "INT")) {
         if (place) {
@@ -766,7 +757,7 @@ void translateExp(Node* node, pOperand place) {
                     arrayType = arrayObj->type;
                     // 计算元素大小
                     elemSize = getTypeSize(arrayType->u.array.elem);
-                    printf("Array element size: %d bytes\n", elemSize);
+                    //printf("Array element size: %d bytes\n", elemSize);
                 }
             }
             
@@ -778,7 +769,7 @@ void translateExp(Node* node, pOperand place) {
             mulInstr->u.binop.op2 = newConstant(elemSize); // 使用实际元素大小
             appendInstruction(mulInstr);
 
-            printf("calculate offset with element size %d\n", elemSize);
+            //printf("calculate offset with element size %d\n", elemSize);
             
             // 计算元素地址
             pOperand addr = newTemporary();
@@ -802,22 +793,11 @@ void translateExp(Node* node, pOperand place) {
         if (place) {
             // 获取结构体地址
             pOperand structAddr = newTemporary();
-            printf("translateExp structAddr-> %s\n", node->firstchild->name);
             translateExp(node->firstchild, structAddr);
             
             // 获取字段名和结构体类型
             Node* fieldNode = node->firstchild->nextsib->nextsib; // 获取ID节点
             char* fieldName = fieldNode->val.id_val;
-            printf("get fieldName -> %s\n", fieldName);
-            
-            // Check if it's really an ID node
-            if (!fieldNode || strcmp_safe_(fieldNode->name, "ID") != 0) {
-                printf("Error: Expected ID node for struct field, got %s\n", 
-                    fieldNode ? fieldNode->name : "NULL");
-                return;
-            }
-
-            printf("Field name: %s\n", fieldName); // Debug print to verify
 
             // 通过符号表查找结构体类型
             Type structType = NULL;
