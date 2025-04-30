@@ -1,4 +1,4 @@
 cd code
 make 
 cd ..
-./parser test/o1.c
+./parser test/o2.c

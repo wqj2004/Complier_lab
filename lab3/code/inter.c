@@ -473,7 +473,7 @@ void translateStmt(Node* node) {
 // Translate expression
 void translateExp(Node* node, pOperand place) {
     if (!node) return;
-    
+    printf("translateExp-> %s\n", node->name);
     // INT常量
     if (!strcmp_safe_(node->firstchild->name, "INT")) {
         if (place) {
@@ -574,16 +574,24 @@ void translateExp(Node* node, pOperand place) {
             pOperand structAddr = newTemporary();
             translateExp(left->firstchild, structAddr);
             
-            // 假设我们知道字段偏移 (需要从符号表获取)
-            Node* fieldNode = left->firstchild->nextsib->nextsib; // 获取字段ID节点
-            char* fieldName = fieldNode->firstchild->val.id_val;
-
-            int lval = 0;
-            Type structType = NULL;
-
+            // 获取字段名和结构体类型
+            Node* fieldNode = left->firstchild->nextsib->nextsib; // 获取ID节点
+            
+            // Check if it's really an ID node
+            if (!fieldNode || strcmp_safe_(fieldNode->name, "ID") != 0) {
+                printf("Error: Expected ID node for struct field, got %s\n", 
+                    fieldNode ? fieldNode->name : "NULL");
+                return;
+            }
+            
+            char* fieldName = fieldNode->val.id_val;
+            printf("Field name in assignment: %s\n", fieldName); // Debug print
+            
             // 通过符号表查找表达式的类型
+            Type structType = NULL;
             if (left->firstchild->firstchild && !strcmp_safe_(left->firstchild->firstchild->name, "ID")) {
                 char* structVarName = left->firstchild->firstchild->val.id_val;
+                printf("Find struct variable: %s\n", structVarName);
                 pobj structObj = searchtab(table, structVarName);
                 if (structObj) {
                     structType = structObj->type;
@@ -592,7 +600,8 @@ void translateExp(Node* node, pOperand place) {
             
             // 计算字段偏移
             int offset = getStructFieldOffset(structType, fieldName);
-    
+            printf("Field offset: %d\n", offset);
+            
             // 计算字段地址
             pOperand fieldAddr = newTemporary();
             pInstruction addInstr = newInstruction(ADD);
@@ -750,6 +759,7 @@ void translateExp(Node* node, pOperand place) {
             pInstruction mulInstr = newInstruction(MUL);
             mulInstr->u.binop.result = offset;
             mulInstr->u.binop.op1 = index;
+            // 选做2
             mulInstr->u.binop.op2 = newConstant(4); // 假设每个元素4字节
             appendInstruction(mulInstr);
 
@@ -783,23 +793,29 @@ void translateExp(Node* node, pOperand place) {
             // 获取字段名和结构体类型
             Node* fieldNode = node->firstchild->nextsib->nextsib; // 获取ID节点
             char* fieldName = fieldNode->val.id_val;
+            printf("get fieldName -> %s\n", fieldName);
             
+            // Check if it's really an ID node
+            if (!fieldNode || strcmp_safe_(fieldNode->name, "ID") != 0) {
+                printf("Error: Expected ID node for struct field, got %s\n", 
+                    fieldNode ? fieldNode->name : "NULL");
+                return;
+            }
+
+            printf("Field name: %s\n", fieldName); // Debug print to verify
+
             // 通过符号表查找结构体类型
             Type structType = NULL;
             if (node->firstchild->firstchild && !strcmp_safe_(node->firstchild->firstchild->name, "ID")) {
                 char* structVarName = node->firstchild->firstchild->val.id_val;
-                printf("find child %s\n", structVarName);
                 pobj structObj = searchtab(table, structVarName);
                 if (structObj) {
-                    // cannot reach this!!!
                     structType = structObj->type;
                 }
             }
             
             // 计算字段偏移
             int offset = getStructFieldOffset(structType, fieldName);
-            
-            printf("calculate offset %d\n", offset);
 
             // 计算字段地址
             pOperand fieldAddr = newTemporary();

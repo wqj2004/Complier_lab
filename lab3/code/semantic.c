@@ -6,6 +6,8 @@
 #define hashsz 0x3fff
 #define max_st_depth 20
 
+const int lab3_nodel = 1;
+
 void syscall_init_() {
     // Create read() function (no arguments, returns int)
     Type read_ret_type = newTYPE(BASIC, INT_TYPE);
@@ -240,6 +242,7 @@ void insert_hashobj(phash hashtab, pobj obj)
 }
 void delete_hashobj(phash hashtab, pobj obj)
 {
+    if(lab3_nodel) return;
     unsigned index = hashfn(obj->name);
     pobj *objlist = hashtab->hashlist;
     pobj cur_obj = objlist[index];
@@ -325,6 +328,7 @@ void insert_tabobj(ptab table, pobj obj)
 }
 void delete_stack_curdepth(ptab table)
 {
+    if(lab3_nodel) return;
     pstack stack = table->st;
     int cur_depth = stack->cur_stack_depth;
     pobj cur_obj = stack->stacklist[cur_depth];
@@ -388,7 +392,7 @@ int objConflict(ptab table, pobj obj)
 
 void showTable()
 {
-    if(!debuger)return;
+    //if(!debuger)return;
     phash hashtab = table->hashtab;
     pobj *objlist = hashtab->hashlist;
     

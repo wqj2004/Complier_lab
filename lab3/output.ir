@@ -1,20 +1,20 @@
 FUNCTION add :
 PARAM temp
 t3 := temp
-t4 := t3 + #-1
+t4 := t3 + #0
 t1 := *t4
 t5 := temp
-t6 := t5 + #-1
+t6 := t5 + #4
 t2 := *t6
 t0 := t1 + t2
 RETURN t0
 FUNCTION main :
 t7 := op
-t8 := t7 + #-1
+t8 := t7 + #0
 t9 := #1
 *t8 := t9
 t10 := op
-t11 := t10 + #-1
+t11 := t10 + #4
 t12 := #2
 *t11 := t12
 t14 := op

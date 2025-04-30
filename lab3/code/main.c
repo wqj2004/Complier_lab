@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     {
         table = newTable();///////////CHANGE
         Program(root);
-
+        
         initInterCodeGen();
         translateProgram(root);
         FILE *out = fopen("output.ir", "w");
