@@ -777,6 +777,7 @@ void translateExp(Node* node, pOperand place) {
         if (place) {
             // 获取结构体地址
             pOperand structAddr = newTemporary();
+            printf("translateExp structAddr-> %s\n", node->firstchild->name);
             translateExp(node->firstchild, structAddr);
             
             // 获取字段名和结构体类型
@@ -787,8 +788,10 @@ void translateExp(Node* node, pOperand place) {
             Type structType = NULL;
             if (node->firstchild->firstchild && !strcmp_safe_(node->firstchild->firstchild->name, "ID")) {
                 char* structVarName = node->firstchild->firstchild->val.id_val;
+                printf("find child %s\n", structVarName);
                 pobj structObj = searchtab(table, structVarName);
                 if (structObj) {
+                    // cannot reach this!!!
                     structType = structObj->type;
                 }
             }

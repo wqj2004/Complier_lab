@@ -198,4 +198,6 @@ int getTypeSize(Type type);
 
 void syscall_init_();
 
+extern ptab table;
+
 #endif

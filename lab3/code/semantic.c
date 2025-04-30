@@ -1329,26 +1329,33 @@ int isStructType(pobj obj)
 
 // Add this helper function to calculate field offsets in structs
 int getStructFieldOffset(Type structType, char* fieldName) {
-    if (!structType || structType->kind != STRUCTURE) {
-        //printf("Kind: %d\n", structType->kind);
-        return 0;
+    if (!structType || structType->kind != STRUCTURE || !fieldName) {
+        printf("无效的结构体类型或字段名\n");
+        return -1;
     }
     
-    printf("getStructFieldOffset\n");
     int offset = 0;
-    FieldList field = structType->u.structure->tail; // Skip the struct name field
+    FieldList field = structType->u.structure;
     
+    // 跳过结构体名字段（第一个字段通常存储结构体名）
+    if (field && field->type == NULL) {
+        field = field->tail;
+    }
+    
+    // 遍历字段计算偏移
     while (field != NULL) {
         if (!strcmp_safe_(field->name, fieldName)) {
+            printf("找到字段 %s，偏移量为 %d\n", fieldName, offset);
             return offset;
         }
         
-        // Calculate size of this field and add to offset
+        // 累加当前字段大小
         offset += getTypeSize(field->type);
         field = field->tail;
     }
     
-    return 0; // Field not found
+    printf("未找到字段 %s\n", fieldName);
+    return -1; // 未找到字段
 }
 
 // Helper function to calculate type sizes
@@ -1357,15 +1364,22 @@ int getTypeSize(Type type) {
     
     switch (type->kind) {
         case BASIC:
-            return 4; // Assuming int and float are 4 bytes
+            return 4; // int和float都是4字节
             
         case ARRAY:
             return type->u.array.size * getTypeSize(type->u.array.elem);
             
         case STRUCTURE: {
             int size = 0;
-            FieldList field = type->u.structure->tail; // Skip the struct name field
+            FieldList field = type->u.structure;
+            
+            // 跳过结构体名字段
+            if (field && field->type == NULL) {
+                field = field->tail;
+            }
+            
             while (field != NULL) {
+                // 计算并累加每个字段的大小
                 size += getTypeSize(field->type);
                 field = field->tail;
             }
@@ -1373,6 +1387,6 @@ int getTypeSize(Type type) {
         }
         
         default:
-            return 4; // Default for other types
+            return 4;
     }
 }
