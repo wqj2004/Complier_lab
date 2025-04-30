@@ -1295,8 +1295,8 @@ Type StructSpecifier(Node *node)
         {
             // 无名结构体
             table->unnamed_struct_num++;
-            tagname = (char *)malloc(sizeof(char) * 20);
-            snprintf(tagname, 20, "%d", table->unnamed_struct_num);
+            tagname = (char *)malloc(sizeof(char) * 100);
+            snprintf(tagname, 100, "%d", table->unnamed_struct_num);
         }
         FieldList field = newFieldList(tagname, NULL);
         rettype->u.structure = field;
