@@ -754,16 +754,31 @@ void translateExp(Node* node, pOperand place) {
             pOperand index = newTemporary();
             translateExp(node->firstchild->nextsib->nextsib, index);
             
-            // 计算偏移 (index * 4)
+            // 获取数组类型以计算元素大小
+            Type arrayType = NULL;
+            int elemSize = 4; // 默认大小为4字节
+            
+            // 尝试从符号表中获取数组类型
+            if (node->firstchild->firstchild && !strcmp_safe_(node->firstchild->firstchild->name, "ID")) {
+                char* arrayName = node->firstchild->firstchild->val.id_val;
+                pobj arrayObj = searchtab(table, arrayName);
+                if (arrayObj && arrayObj->type->kind == ARRAY) {
+                    arrayType = arrayObj->type;
+                    // 计算元素大小
+                    elemSize = getTypeSize(arrayType->u.array.elem);
+                    printf("Array element size: %d bytes\n", elemSize);
+                }
+            }
+            
+            // 计算偏移 (index * elemSize)
             pOperand offset = newTemporary();
             pInstruction mulInstr = newInstruction(MUL);
             mulInstr->u.binop.result = offset;
             mulInstr->u.binop.op1 = index;
-            // 选做2
-            mulInstr->u.binop.op2 = newConstant(4); // 假设每个元素4字节
+            mulInstr->u.binop.op2 = newConstant(elemSize); // 使用实际元素大小
             appendInstruction(mulInstr);
 
-            printf("calculate offset\n");
+            printf("calculate offset with element size %d\n", elemSize);
             
             // 计算元素地址
             pOperand addr = newTemporary();

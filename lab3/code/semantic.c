@@ -1,7 +1,7 @@
 #include "semantic.h"
 #include <assert.h>
 
-#define debuger 0
+#define debuger 1
 
 #define hashsz 0x3fff
 #define max_st_depth 20
@@ -679,8 +679,8 @@ void StmtList(Node *node, pobj funobj)
 void Stmt(Node *node, pobj funobj)
 {
     //assert(node != NULL);
-    if(node->firstchild == NULL)
-        return;
+    // if(node->firstchild == NULL)
+    //     return;
     Type type = NULL;
     Type rettype = NULL;
     if (!strcmp_safe_(node->firstchild->name, "Exp"))
@@ -721,7 +721,7 @@ void Stmt(Node *node, pobj funobj)
     {
         int lval = 0;
         type = Exp(node->firstchild->nextsib->nextsib, &lval);
-        Node *stmtnode = node->firstchild->nextsib->nextsib->nextsib;
+        Node *stmtnode = node->firstchild->nextsib->nextsib->nextsib->nextsib;
         Stmt(stmtnode, funobj);
     }
     else
