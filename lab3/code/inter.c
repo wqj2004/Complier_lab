@@ -1,6 +1,3 @@
-
-
-
 #include "inter.h"
 #include "semantic.h"
 #include "common.h"
@@ -12,6 +9,7 @@
 static CodeList code_list = {NULL, NULL};
 static int temp_var_count = 0;
 static int label_count = 0;
+static int var_count = 0;
 
 // Initialize the intermediate code generator
 void initInterCodeGen() {
@@ -25,6 +23,8 @@ void initInterCodeGen() {
 pOperand newVariable(char* name) {
     pOperand op = (pOperand)malloc(sizeof(Operand));
     op->kind = VARIABLE;
+    // op->u.name = (char*)malloc(50 * sizeof(char)); // Allocate space for name
+    // sprintf(op->u.name, "%s_%d", name, var_count++); // Unique variable name
     op->u.name = name;
     return op;
 }
@@ -224,9 +224,14 @@ void translateExtDefList(Node* node) {
         Node* nextExtDefList = node->nextsib;
         if (nextExtDefList)
             translateExtDefList(nextExtDefList);
-    }else {
+    }else if(!strcmp_safe_(node->name, "ExtDef")){
         translateExtDef(node);
+        
+        Node* nextExtDefList = node->nextsib;
+        if (nextExtDefList)
+            translateExtDefList(nextExtDefList);
     }
+
 }
 
 // Translate a single external definition
@@ -370,18 +375,16 @@ void translateStmtList(Node* node) {
 void translateStmt(Node* node) {
     if (!node || !node->firstchild) return;
     
-    printf("translateStmt-> %s\n", node->name);
-
+    // 表达式语句
     if (!strcmp_safe_(node->firstchild->name, "Exp")) {
-        // Expression statement
         translateExp(node->firstchild, NULL);
     }
+    // 复合语句
     else if (!strcmp_safe_(node->firstchild->name, "CompSt")) {
-        // Compound statement
         translateCompSt(node->firstchild);
     }
+    // 返回语句
     else if (!strcmp_safe_(node->firstchild->name, "RETURN")) {
-        // Return statement
         Node* exp = node->firstchild->nextsib;
         pOperand place = newTemporary();
         translateExp(exp, place);
@@ -390,85 +393,77 @@ void translateStmt(Node* node) {
         returnInstr->u.singleop.op = place;
         appendInstruction(returnInstr);
     }
+    // IF语句
     else if (!strcmp_safe_(node->firstchild->name, "IF")) {
-        // If statement
-        printf("detected IF\n");
         pOperand label_true = newLabel();
         pOperand label_false = newLabel();
         pOperand label_end = newLabel();
         
-        // Find the condition expression
+        // 处理条件
         Node* exp = node->firstchild->nextsib->nextsib; // Skip IF LP
-        
-        printf("translateStmt-> %s\n", exp->name);
-
-        // Generate condition code
         translateCond(exp, label_true, label_false);
         
-        // True branch
+        // True分支
         pInstruction labelTrueInstr = newInstruction(LABEL);
         labelTrueInstr->u.singleop.op = label_true;
         appendInstruction(labelTrueInstr);
         
-        // Find and translate the "then" statement
+        // 翻译then语句
         Node* stmt1 = exp->nextsib->nextsib; // Skip RP
         translateStmt(stmt1);
         
-        // Generate jump to end
+        // 跳转到结束
         pInstruction gotoEndInstr = newInstruction(GOTO);
         gotoEndInstr->u.singleop.op = label_end;
         appendInstruction(gotoEndInstr);
         
-        // False branch
+        // False分支
         pInstruction labelFalseInstr = newInstruction(LABEL);
         labelFalseInstr->u.singleop.op = label_false;
         appendInstruction(labelFalseInstr);
         
-        printf("before elseNode\n");
-
-        // Check if there's an "else" branch
+        // 检查是否有else分支
         Node* elseNode = stmt1->nextsib;
         if (elseNode && !strcmp_safe_(elseNode->name, "ELSE")) {
             Node* stmt2 = elseNode->nextsib;
-            translateStmt(stmt2);
+            translateStmt(stmt2); // 这会递归处理嵌套的if-else
         }
         
-        // End label
+        // 结束标签
         pInstruction labelEndInstr = newInstruction(LABEL);
         labelEndInstr->u.singleop.op = label_end;
         appendInstruction(labelEndInstr);
-
-        printf("finish dealing IF\n");
     }
+    // WHILE语句
     else if (!strcmp_safe_(node->firstchild->name, "WHILE")) {
         pOperand label_start = newLabel();
         pOperand label_true = newLabel();
         pOperand label_false = newLabel();
         
-        // Start label
+        // 开始标签
         pInstruction labelStartInstr = newInstruction(LABEL);
         labelStartInstr->u.singleop.op = label_start;
         appendInstruction(labelStartInstr);
         
-        // Translate condition
+        // 处理循环条件
         Node* exp = node->firstchild->nextsib->nextsib; // Skip WHILE LP
         translateCond(exp, label_true, label_false);
         
-        // True branch
+        // 循环体
         pInstruction labelTrueInstr = newInstruction(LABEL);
         labelTrueInstr->u.singleop.op = label_true;
         appendInstruction(labelTrueInstr);
         
-        // Translate loop body
+        // 翻译循环体
         Node* stmt = exp->nextsib->nextsib; // Skip RP
         translateStmt(stmt);
         
-        // Jump back to condition
+        // 跳回条件检查
         pInstruction gotoStartInstr = newInstruction(GOTO);
         gotoStartInstr->u.singleop.op = label_start;
         appendInstruction(gotoStartInstr);
         
-        // False branch (loop exit)
+        // 循环结束标签
         pInstruction labelFalseInstr = newInstruction(LABEL);
         labelFalseInstr->u.singleop.op = label_false;
         appendInstruction(labelFalseInstr);
@@ -479,6 +474,7 @@ void translateStmt(Node* node) {
 void translateExp(Node* node, pOperand place) {
     if (!node) return;
     
+    // INT常量
     if (!strcmp_safe_(node->firstchild->name, "INT")) {
         if (place) {
             pInstruction instr = newInstruction(ASSIGN);
@@ -487,6 +483,16 @@ void translateExp(Node* node, pOperand place) {
             appendInstruction(instr);
         }
     }
+    // FLOAT常量
+    else if (!strcmp_safe_(node->firstchild->name, "FLOAT")) {
+        if (place) {
+            pInstruction instr = newInstruction(ASSIGN);
+            instr->u.assign.result = place;
+            instr->u.assign.op1 = newConstant(node->firstchild->val.float_val);
+            appendInstruction(instr);
+        }
+    }
+    // 变量引用
     else if (!strcmp_safe_(node->firstchild->name, "ID") && node->firstchild->nextsib == NULL) {
         if (place) {
             pInstruction instr = newInstruction(ASSIGN);
@@ -495,32 +501,125 @@ void translateExp(Node* node, pOperand place) {
             appendInstruction(instr);
         }
     }
+    // 赋值表达式
     else if (!strcmp_safe_(node->firstchild->name, "Exp") && 
              node->firstchild->nextsib && 
              !strcmp_safe_(node->firstchild->nextsib->name, "ASSIGNOP")) {
-        // Assignment expression: Exp ASSIGNOP Exp
         Node* left = node->firstchild;
         Node* right = left->nextsib->nextsib;
         
-        // Get the variable name from left side
-        Node* id = find_node(left, "ID");
-        if (id) {
-            pOperand leftOp = newVariable(id->val.id_val);
+        // 处理左值
+        if (left->firstchild && !strcmp_safe_(left->firstchild->name, "ID")) {
+            // 简单变量赋值
+            pOperand leftOp = newVariable(left->firstchild->val.id_val);
             
-            // Translate the right expression
+            // 翻译右边表达式
             pOperand rightOp = place ? place : newTemporary();
             translateExp(right, rightOp);
             
-            // Assign right to left
+            // 生成赋值指令
             if (!place || (place && place->kind != VARIABLE) || 
-                (place && place->kind == VARIABLE && strcmp_safe_(place->u.name, id->val.id_val))) {
+                (place && place->kind == VARIABLE && strcmp_safe_(place->u.name, left->firstchild->val.id_val))) {
                 pInstruction instr = newInstruction(ASSIGN);
                 instr->u.assign.result = leftOp;
                 instr->u.assign.op1 = rightOp;
                 appendInstruction(instr);
             }
+        } 
+        else if (left->firstchild && !strcmp_safe_(left->firstchild->name, "Exp") && 
+                 left->firstchild->nextsib && !strcmp_safe_(left->firstchild->nextsib->name, "LB")) {
+            // 数组元素赋值: Exp[Exp] = Exp
+            pOperand array = newTemporary();
+            translateExp(left->firstchild, array);
+            
+            pOperand index = newTemporary();
+            translateExp(left->firstchild->nextsib->nextsib, index);
+            
+            // 计算地址
+            pOperand offset = newTemporary();
+            pInstruction mulInstr = newInstruction(MUL);
+            mulInstr->u.binop.result = offset;
+            mulInstr->u.binop.op1 = index;
+            mulInstr->u.binop.op2 = newConstant(4); // 假设每个元素4字节
+            appendInstruction(mulInstr);
+            
+            pOperand addr = newTemporary();
+            pInstruction addInstr = newInstruction(ADD);
+            addInstr->u.binop.result = addr;
+            addInstr->u.binop.op1 = array;
+            addInstr->u.binop.op2 = offset;
+            appendInstruction(addInstr);
+            
+            // 右值
+            pOperand rightVal = newTemporary();
+            translateExp(right, rightVal);
+            
+            // 间接赋值
+            pInstruction assignInstr = newInstruction(DEREF_L);
+            assignInstr->u.assign.result = addr;
+            assignInstr->u.assign.op1 = rightVal;
+            appendInstruction(assignInstr);
+            
+            if (place) {
+                pInstruction copyInstr = newInstruction(ASSIGN);
+                copyInstr->u.assign.result = place;
+                copyInstr->u.assign.op1 = rightVal;
+                appendInstruction(copyInstr);
+            }
+        }
+        else if (left->firstchild && !strcmp_safe_(left->firstchild->name, "Exp") && 
+                 left->firstchild->nextsib && !strcmp_safe_(left->firstchild->nextsib->name, "DOT")) {
+            // 结构体字段赋值: Exp.ID = Exp
+            // 结构体访问需要计算字段偏移
+            pOperand structAddr = newTemporary();
+            translateExp(left->firstchild, structAddr);
+            
+            // 假设我们知道字段偏移 (需要从符号表获取)
+            Node* fieldNode = left->firstchild->nextsib->nextsib; // 获取字段ID节点
+            char* fieldName = fieldNode->firstchild->val.id_val;
+
+            int lval = 0;
+            Type structType = NULL;
+
+            // 通过符号表查找表达式的类型
+            if (left->firstchild->firstchild && !strcmp_safe_(left->firstchild->firstchild->name, "ID")) {
+                char* structVarName = left->firstchild->firstchild->val.id_val;
+                pobj structObj = searchtab(table, structVarName);
+                if (structObj) {
+                    structType = structObj->type;
+                }
+            }
+            
+            // 计算字段偏移
+            int offset = getStructFieldOffset(structType, fieldName);
+    
+            // 计算字段地址
+            pOperand fieldAddr = newTemporary();
+            pInstruction addInstr = newInstruction(ADD);
+            addInstr->u.binop.result = fieldAddr;
+            addInstr->u.binop.op1 = structAddr;
+            addInstr->u.binop.op2 = newConstant(offset);
+            appendInstruction(addInstr);
+            
+            // 右值
+            pOperand rightVal = newTemporary();
+            translateExp(right, rightVal);
+            
+            // 间接赋值
+            pInstruction assignInstr = newInstruction(DEREF_L);
+            assignInstr->u.assign.result = fieldAddr;
+            assignInstr->u.assign.op1 = rightVal;
+            appendInstruction(assignInstr);
+            
+            if (place) {
+                pInstruction copyInstr = newInstruction(ASSIGN);
+                copyInstr->u.assign.result = place;
+                copyInstr->u.assign.op1 = rightVal;
+                appendInstruction(copyInstr);
+            }
         }
     }
+    // 二元运算
     else if (!strcmp_safe_(node->firstchild->name, "Exp") && 
              node->firstchild->nextsib && 
              node->firstchild->nextsib->nextsib &&
@@ -528,12 +627,11 @@ void translateExp(Node* node, pOperand place) {
               !strcmp_safe_(node->firstchild->nextsib->name, "MINUS") ||
               !strcmp_safe_(node->firstchild->nextsib->name, "STAR") || 
               !strcmp_safe_(node->firstchild->nextsib->name, "DIV"))) {
-        // Binary operation: Exp OP Exp
         if (place) {
             Node* left = node->firstchild;
             Node* op = left->nextsib;
             Node* right = op->nextsib;
-            
+
             pOperand t1 = newTemporary();
             pOperand t2 = newTemporary();
             
@@ -556,62 +654,194 @@ void translateExp(Node* node, pOperand place) {
             appendInstruction(instr);
         }
     }
+    // 函数调用
     else if (!strcmp_safe_(node->firstchild->name, "ID") && 
              node->firstchild->nextsib && 
              !strcmp_safe_(node->firstchild->nextsib->name, "LP")) {
-        // Function call: ID LP RP or ID LP Args RP
-        if (node->firstchild->nextsib->nextsib && 
-            !strcmp_safe_(node->firstchild->nextsib->nextsib->name, "Args")) {
-            // Function call with arguments
-            Node* args = node->firstchild->nextsib->nextsib;
-            translateArgs(args);
-        }
-        
+        // 获取函数名
         char* func_name = node->firstchild->val.id_val;
-        printf("translateExp-> %s\n", func_name);
+        
         if (!strcmp_safe_(func_name, "read")) {
-            // Handle read system call
+            // 处理read系统调用
             if (place) {
-                printf("translateExp-> read (detected)\n");
                 pInstruction readInstr = newInstruction(READ);
                 readInstr->u.singleop.op = place;
                 appendInstruction(readInstr);
             }
+            return;
         }
         else if (!strcmp_safe_(func_name, "write")) {
-            // Handle write system call - should have one argument
+            // 处理write系统调用
             if (node->firstchild->nextsib->nextsib && 
                 !strcmp_safe_(node->firstchild->nextsib->nextsib->name, "Args")) {
                 Node* args = node->firstchild->nextsib->nextsib;
                 Node* exp = args->firstchild;
                 
-                // Evaluate the expression to be written
+                // 计算要输出的表达式
                 pOperand t = newTemporary();
                 translateExp(exp, t);
                 
-                // Generate WRITE instruction
+                // 生成WRITE指令
                 pInstruction writeInstr = newInstruction(WRITE);
                 writeInstr->u.singleop.op = t;
                 appendInstruction(writeInstr);
             }
+            return;
         }
-        else {
-            // Regular function call
-            if (node->firstchild->nextsib->nextsib && 
-                !strcmp_safe_(node->firstchild->nextsib->nextsib->name, "Args")) {
-                // Function call with arguments
-                Node* args = node->firstchild->nextsib->nextsib;
-                translateArgs(args);
-            }
+        
+        // 普通函数调用
+        if (node->firstchild->nextsib->nextsib && 
+            !strcmp_safe_(node->firstchild->nextsib->nextsib->name, "Args")) {
+            // 处理参数
+            translateArgs(node->firstchild->nextsib->nextsib);
+        }
+        
+        // 生成函数调用指令
+        pInstruction callInstr = newInstruction(CALL);
+        callInstr->u.call.op = newVariable(func_name);
+        callInstr->u.call.result = place ? place : newTemporary();
+        appendInstruction(callInstr);
+    }
+    // 一元运算符(+, -)
+    else if ((!strcmp_safe_(node->firstchild->name, "PLUS") || !strcmp_safe_(node->firstchild->name, "MINUS")) && 
+             node->firstchild->nextsib) {
+        if (place) {
+            Node* op = node->firstchild;
+            Node* right = op->nextsib;
+            pOperand t1 = newConstant(0);
+            pOperand t2 = newTemporary();
+            translateExp(right, t2);
             
-            // Function call instruction
-            pInstruction callInstr = newInstruction(CALL);
-            callInstr->u.call.op = newVariable(func_name);
-            callInstr->u.call.result = place ? place : newTemporary();
-            appendInstruction(callInstr);
+            pInstruction instr;
+            if (!strcmp_safe_(op->name, "PLUS"))
+                instr = newInstruction(ADD);
+            else // MINUS
+                instr = newInstruction(SUB);
+
+            instr->u.binop.result = place;
+            instr->u.binop.op1 = t1;
+            instr->u.binop.op2 = t2;
+            appendInstruction(instr);
         }
     }
-    // Add more expression types as needed
+    // 括号表达式
+    else if (!strcmp_safe_(node->firstchild->name, "LP") && 
+             node->firstchild->nextsib && 
+             !strcmp_safe_(node->firstchild->nextsib->name, "Exp")) {
+        if (place) {
+            translateExp(node->firstchild->nextsib, place);
+        }
+    }
+    // 数组访问 Exp[Exp]
+    else if (!strcmp_safe_(node->firstchild->name, "Exp") && 
+             node->firstchild->nextsib && 
+             !strcmp_safe_(node->firstchild->nextsib->name, "LB")) {
+        if (place) {
+            // 处理数组基址
+            pOperand array = newTemporary();
+            translateExp(node->firstchild, array);
+            
+            // 处理索引
+            pOperand index = newTemporary();
+            translateExp(node->firstchild->nextsib->nextsib, index);
+            
+            // 计算偏移 (index * 4)
+            pOperand offset = newTemporary();
+            pInstruction mulInstr = newInstruction(MUL);
+            mulInstr->u.binop.result = offset;
+            mulInstr->u.binop.op1 = index;
+            mulInstr->u.binop.op2 = newConstant(4); // 假设每个元素4字节
+            appendInstruction(mulInstr);
+
+            printf("calculate offset\n");
+            
+            // 计算元素地址
+            pOperand addr = newTemporary();
+            pInstruction addInstr = newInstruction(ADD);
+            addInstr->u.binop.result = addr;
+            addInstr->u.binop.op1 = array;
+            addInstr->u.binop.op2 = offset;
+            appendInstruction(addInstr);
+            
+            // 加载元素值
+            pInstruction loadInstr = newInstruction(DEREF_R);
+            loadInstr->u.assign.result = place;
+            loadInstr->u.assign.op1 = addr;
+            appendInstruction(loadInstr);
+        }
+    }
+    // 结构体成员访问 Exp.ID
+    else if (!strcmp_safe_(node->firstchild->name, "Exp") && 
+             node->firstchild->nextsib && 
+             !strcmp_safe_(node->firstchild->nextsib->name, "DOT")) {
+        if (place) {
+            // 获取结构体地址
+            pOperand structAddr = newTemporary();
+            translateExp(node->firstchild, structAddr);
+            
+            // 获取字段名和结构体类型
+            Node* fieldNode = node->firstchild->nextsib->nextsib; // 获取ID节点
+            char* fieldName = fieldNode->val.id_val;
+            
+            // 通过符号表查找结构体类型
+            Type structType = NULL;
+            if (node->firstchild->firstchild && !strcmp_safe_(node->firstchild->firstchild->name, "ID")) {
+                char* structVarName = node->firstchild->firstchild->val.id_val;
+                pobj structObj = searchtab(table, structVarName);
+                if (structObj) {
+                    structType = structObj->type;
+                }
+            }
+            
+            // 计算字段偏移
+            int offset = getStructFieldOffset(structType, fieldName);
+            
+            printf("calculate offset %d\n", offset);
+
+            // 计算字段地址
+            pOperand fieldAddr = newTemporary();
+            pInstruction addInstr = newInstruction(ADD);
+            addInstr->u.binop.result = fieldAddr;
+            addInstr->u.binop.op1 = structAddr;
+            addInstr->u.binop.op2 = newConstant(offset);
+            appendInstruction(addInstr);
+            
+            // 加载字段值
+            pInstruction loadInstr = newInstruction(DEREF_R);
+            loadInstr->u.assign.result = place;
+            loadInstr->u.assign.op1 = fieldAddr;
+            appendInstruction(loadInstr);
+        }
+    }
+    // 取地址操作 &Exp
+    else if (!strcmp_safe_(node->firstchild->name, "AND") && node->firstchild->nextsib) {
+        if (place) {
+            // 假设AND操作符是取地址符
+            Node* exp = node->firstchild->nextsib;
+            
+            if (exp->firstchild && !strcmp_safe_(exp->firstchild->name, "ID")) {
+                // 获取变量地址
+                pInstruction addrInstr = newInstruction(ADDR);
+                addrInstr->u.assign.result = place;
+                addrInstr->u.assign.op1 = newVariable(exp->firstchild->val.id_val);
+                appendInstruction(addrInstr);
+            }
+        }
+    }
+    // 解引用操作 *Exp
+    else if (!strcmp_safe_(node->firstchild->name, "STAR") && node->firstchild->nextsib) {
+        if (place) {
+            // 获取指针
+            pOperand ptr = newTemporary();
+            translateExp(node->firstchild->nextsib, ptr);
+            
+            // 解引用加载值
+            pInstruction derefInstr = newInstruction(DEREF_R);
+            derefInstr->u.assign.result = place;
+            derefInstr->u.assign.op1 = ptr;
+            appendInstruction(derefInstr);
+        }
+    }
 }
 
 // Translate arguments
@@ -644,8 +874,6 @@ void translateCond(Node* node, pOperand label_true, pOperand label_false) {
         !strcmp_safe_(node->firstchild->nextsib->name, "RELOP")) {
         // Relational operation: Exp RELOP Exp
         
-        printf("RELOP detected\n");
-
         Node* exp1 = node->firstchild;
         Node* relop = exp1->nextsib;
         Node* exp2 = relop->nextsib;
@@ -663,10 +891,7 @@ void translateCond(Node* node, pOperand label_true, pOperand label_false) {
         // Copy the relop from the node (==, !=, >, <, >=, <=)
         ifGotoInstr->u.if_goto.relop = (char*)malloc(10 * sizeof(char));
         ifGotoInstr->u.if_goto.relop[0] = '\0'; // Initialize to empty string
-        printf("strcpy to [%s] \n", ifGotoInstr->u.if_goto.relop);
-        printf("cpy from [%s] \n", relop->val.id_val);
         strcpy(ifGotoInstr->u.if_goto.relop, relop->val.id_val);
-        printf("cpy success\n");
         appendInstruction(ifGotoInstr);
         
         pInstruction gotoInstr = newInstruction(GOTO);
@@ -726,3 +951,4 @@ void translateCond(Node* node, pOperand label_true, pOperand label_false) {
         appendInstruction(gotoInstr);
     }
 }
+

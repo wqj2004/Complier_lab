@@ -1326,3 +1326,53 @@ int isStructType(pobj obj)
         return 0;
     return obj->type->kind == STRUCTURE;
 }
+
+// Add this helper function to calculate field offsets in structs
+int getStructFieldOffset(Type structType, char* fieldName) {
+    if (!structType || structType->kind != STRUCTURE) {
+        //printf("Kind: %d\n", structType->kind);
+        return 0;
+    }
+    
+    printf("getStructFieldOffset\n");
+    int offset = 0;
+    FieldList field = structType->u.structure->tail; // Skip the struct name field
+    
+    while (field != NULL) {
+        if (!strcmp_safe_(field->name, fieldName)) {
+            return offset;
+        }
+        
+        // Calculate size of this field and add to offset
+        offset += getTypeSize(field->type);
+        field = field->tail;
+    }
+    
+    return 0; // Field not found
+}
+
+// Helper function to calculate type sizes
+int getTypeSize(Type type) {
+    if (!type) return 0;
+    
+    switch (type->kind) {
+        case BASIC:
+            return 4; // Assuming int and float are 4 bytes
+            
+        case ARRAY:
+            return type->u.array.size * getTypeSize(type->u.array.elem);
+            
+        case STRUCTURE: {
+            int size = 0;
+            FieldList field = type->u.structure->tail; // Skip the struct name field
+            while (field != NULL) {
+                size += getTypeSize(field->type);
+                field = field->tail;
+            }
+            return size;
+        }
+        
+        default:
+            return 4; // Default for other types
+    }
+}

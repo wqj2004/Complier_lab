@@ -31,6 +31,7 @@ int main(int argc, char **argv)
         initInterCodeGen();
         translateProgram(root);
         FILE *out = fopen("output.ir", "w");
+        //FILE *out = stdout;
         if (out) {
             outputInterCode(out);
             fclose(out);

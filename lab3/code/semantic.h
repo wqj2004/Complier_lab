@@ -192,6 +192,9 @@ Type StructSpecifier(Node *node);
 int isStructType(pobj obj);
 Node *find_node(Node *start, char *name);
 int strcmp_safe_(const char *_Str1,const char *_Str2);
+int getStructFieldOffset(Type structType, char* fieldName);
+int getTypeSize(Type type);
+
 
 void syscall_init_();
 

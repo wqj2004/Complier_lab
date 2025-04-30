@@ -1,5 +1,4 @@
 cd code
 make 
 cd ..
-./parser test.c
-cat output.ir
+./parser test/o1.c
