@@ -679,6 +679,8 @@ void StmtList(Node *node, pobj funobj)
 void Stmt(Node *node, pobj funobj)
 {
     //assert(node != NULL);
+    if(node->firstchild == NULL)
+        return;
     Type type = NULL;
     Type rettype = NULL;
     if (!strcmp_safe_(node->firstchild->name, "Exp"))
