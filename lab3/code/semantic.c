@@ -49,6 +49,22 @@ Node *find_node(Node *start, char *name)
     return NULL;
 }
 
+Node *find_node_recursive(Node *start, char *name)
+{
+    if (start == NULL)
+        return NULL;
+    if (!strcmp_safe_(start->name, name))
+        return start;
+    Node *cur = start->firstchild;
+    while (cur != NULL)
+    {
+        Node *result = find_node_recursive(cur, name);
+        if (result != NULL)
+            return result;
+        cur = cur->nextsib;
+    }
+    return NULL;
+}
 
 unsigned hashfn(char *name)
 {
@@ -1351,7 +1367,7 @@ int getStructFieldOffset(Type structType, char* fieldName) {
     // 遍历字段计算偏移
     while (field != NULL) {
         if (!strcmp_safe_(field->name, fieldName)) {
-            printf("找到字段 %s，偏移量为 %d\n", fieldName, offset);
+            //printf("找到字段 %s，偏移量为 %d\n", fieldName, offset);
             return offset;
         }
         
@@ -1360,7 +1376,7 @@ int getStructFieldOffset(Type structType, char* fieldName) {
         field = field->tail;
     }
     
-    printf("未找到字段 %s\n", fieldName);
+    //printf("未找到字段 %s\n", fieldName);
     return -1; // 未找到字段
 }
 

@@ -23,8 +23,8 @@ int main(int argc, char **argv)
     yyrestart(f);
     yyparse();
 
-    // FILE *AST = fopen("AST.txt", "w");
-    // print_tree(root, 0, AST);
+    FILE *AST = fopen("ASTo1.txt", "w");
+    print_tree(root, 0, AST);
     
     if (lexerror_count == 0 && synerror_count == 0)
     {
@@ -33,8 +33,8 @@ int main(int argc, char **argv)
         
         initInterCodeGen();
         translateProgram(root);
-        //FILE *out = fopen("output.ir", "w");
-        FILE *out = stdout;
+        FILE *out = fopen(argv[2], "w");
+        //FILE *out = stdout;
         if (out) {
             outputInterCode(out);
             fclose(out);

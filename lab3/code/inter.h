@@ -102,4 +102,6 @@ void translateArgs(Node* node);
 void outputInterCode(FILE* out);
 
 // Uitls
+int calculateArraySize(Node* varDec);
+
 #endif

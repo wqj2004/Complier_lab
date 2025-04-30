@@ -23,8 +23,6 @@ void initInterCodeGen() {
 pOperand newVariable(char* name) {
     pOperand op = (pOperand)malloc(sizeof(Operand));
     op->kind = VARIABLE;
-    // op->u.name = (char*)malloc(50 * sizeof(char)); // Allocate space for name
-    // sprintf(op->u.name, "%s_%d", name, var_count++); // Unique variable name
     op->u.name = name;
     return op;
 }
@@ -298,8 +296,7 @@ void translateCompSt(Node* node) {
 // Translate definition list
 void translateDefList(Node* node) {
     if (!node) return;
-    //Node* def = node->firstchild;
-    Node *def = node->firstchild;
+    Node* def = node->firstchild;
 
     while (def) {
         Node* decList = def->firstchild->nextsib;
@@ -307,31 +304,90 @@ void translateDefList(Node* node) {
             Node* dec = decList->firstchild;
             while (dec) {
                 Node* varDec = dec->firstchild;
+                //printf("detected vardec %s <- %s <- %s\n", varDec->name, dec->name, decList->name);
                 
-                
+                Type varType = NULL;
+                Node* idNode = find_node_recursive(varDec, "ID");
+                if (idNode) {
+                    //printf("initializing %s\n", idNode->val.id_val);
+                    char *varName = idNode->val.id_val;
+                    pobj varObj = searchtab(table, varName);
+                    if (varObj) {
+                        varType = varObj->type;
+                        int size = getTypeSize(varType);
 
-                // Check if this is an array declaration
-                if (find_node(varDec, "LB")) {
-                    // Handle array allocation (DEC instruction)
-                    Node* idNode = find_node(varDec, "ID");
-                    Node* sizeNode = find_node(varDec, "INT");
-                    if (idNode && sizeNode) {
-                        int size = sizeNode->val.int_val * 4; // 4 bytes per element
-                        
-                        pInstruction decInstr = newInstruction(DEC);
-                        decInstr->u.dec.op = newVariable(idNode->val.id_val);
-                        decInstr->u.dec.size = size;
-                        appendInstruction(decInstr);
+                        //DEC指令生成
+                        if (size > 4) {
+                            //printf("gen dec for %s\n", varName);
+                            // Allocate memory for large variables
+                            pInstruction decInstr = newInstruction(DEC);
+                            decInstr->u.dec.op = newVariable(varName);
+                            decInstr->u.dec.size = size;
+                            appendInstruction(decInstr);
+                        }
                     }
                 }
+                
+                // // Check if this is an array declaration
+                // if (find_node(varDec, "LB")) {
+                //     // Handle array allocation (DEC instruction)
+                //     Node* idNode = find_node(varDec, "ID");
+                    
+                //     // Get array dimensions and calculate total size
+                //     int totalSize = calculateArraySize(varDec);
+                    
+                //     if (idNode && totalSize > 0) {
+                //         pInstruction decInstr = newInstruction(DEC);
+                //         decInstr->u.dec.op = newVariable(idNode->val.id_val);
+                //         decInstr->u.dec.size = totalSize;
+                //         appendInstruction(decInstr);
+                //     }
+                // }
+                // // Check if this is a structure type that needs memory allocation
+                // else if (def->firstchild && !strcmp_safe_(def->firstchild->name, "Specifier")) {
+                //     Node* specifier = def->firstchild;
+                //     Node* structSpecifier = find_node(specifier, "StructSpecifier");
+                    
+                //     if (structSpecifier) {
+                //         // It's a structure type, allocate memory for it
+                //         Node* idNode = find_node(varDec, "ID");
+                //         if (idNode) {
+                //             // Find structure size from symbol table
+                //             char* varName = idNode->val.id_val;
+                //             pobj varObj = searchtab(table, varName);
+                            
+                //             if (varObj && varObj->type->kind == STRUCTURE) {
+                //                 int structSize = getTypeSize(varObj->type);
+                                
+                //                 if (structSize > 0) {
+                //                     pInstruction decInstr = newInstruction(DEC);
+                //                     decInstr->u.dec.op = newVariable(varName);
+                //                     decInstr->u.dec.size = structSize;
+                //                     appendInstruction(decInstr);
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
                 
                 // Check if there's an initializer
                 if (dec->firstchild->nextsib && !strcmp_safe_(dec->firstchild->nextsib->name, "ASSIGNOP")) {
                     Node* exp = dec->firstchild->nextsib->nextsib;
                     Node* idNode = find_node(varDec, "ID");
+                    //printf("initializer from %s to %s\n", exp->name, idNode->val.id_val);
                     if (idNode && exp) {
                         pOperand varOp = newVariable(idNode->val.id_val);
                         translateExp(exp, varOp);
+                    }
+                }
+                // Simple variable declaration without initialization
+                else if (!find_node(varDec, "LB")) {
+                    // We don't need to generate any IR for simple variables
+                    // They are handled implicitly in memory allocation
+                    Node* idNode = find_node(varDec, "ID");
+                    if (idNode) {
+                        // You could add debugging here if needed
+                        // printf("Simple variable declaration: %s\n", idNode->val.id_val);
                     }
                 }
                 
@@ -344,8 +400,35 @@ void translateDefList(Node* node) {
             }
         }
         
-        def = def->nextsib;
+        if(def->nextsib && strcmp_safe_(def->nextsib->name, "DefList") == 0) {
+            def = def->nextsib->firstchild; // Move to the first child of DefList
+        } else {
+            break; // No more definitions
+        }
     }
+}
+
+// Helper function to calculate array size considering multi-dimensional arrays
+int calculateArraySize(Node* varDec) {
+    int totalSize = 1;
+    Node* current = varDec;
+    
+    // Navigate through all dimensions
+    while (find_node(current, "LB")) {
+        Node* sizeNode = find_node(current, "INT");
+        if (sizeNode) {
+            totalSize *= sizeNode->val.int_val;
+        } else {
+            return 0; // Error: array dimension not specified
+        }
+        
+        // For multi-dimensional arrays, the LB and INT nodes
+        // are inside the nested VarDec nodes
+        current = current->firstchild;
+    }
+    
+    // Multiply by 4 (assuming each element is 4 bytes)
+    return totalSize * 4;
 }
 
 // Translate statement list
@@ -941,7 +1024,7 @@ void translateCond(Node* node, pOperand label_true, pOperand label_false) {
         appendInstruction(labelMidInstr);
         
         translateCond(node->firstchild->nextsib->nextsib, label_true, label_false);
-    }
+    }    
     else if (!strcmp_safe_(node->firstchild->name, "NOT") && node->firstchild->nextsib) {
         // NOT operation: NOT Exp
         translateCond(node->firstchild->nextsib, label_false, label_true);
