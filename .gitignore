@@ -8,4 +8,12 @@ lab1/Code/output.txt
 lab1/Code/parser
 lab1/Code/syntax.output
 lab1/Tests/*
+lab2/Code/lex.yy.c
+lab2/Code/syntax.tab.h
+lab2/Code/syntax.tab.c
+lab2/Code/syntax.tab.o
+lab2/Code/log.txt
+lab2/Code/output.txt
+lab2/Code/parser
+lab2/Code/syntax.output
 Tests/*

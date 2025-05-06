@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 int 1Wrong()
 {
     int _1Correct;
     return 1;
+=======
+int main()
+{
+    int i[10];
+    i[1.5]=10;
+>>>>>>> cyh_lab3
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 struct a{
   int a;
   float b;
@@ -13,4 +14,10 @@ int main(int a, int b){
   a = 1+-2;
   main();
   b = 2;
+=======
+float main()
+{
+    int i,j;
+    return j;
+>>>>>>> cyh_lab3
 }

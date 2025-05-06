@@ -1,3 +1,10 @@
+<<<<<<< HEAD
 int main() {}
     i = i + 1;
+=======
+int main()
+{
+    int i;
+    i(10);
+>>>>>>> cyh_lab3
 }

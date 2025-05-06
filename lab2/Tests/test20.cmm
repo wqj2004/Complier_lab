@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 int main() {
     int a[10][10], dis[1.2][10];
     int i = 0, j = 0, k = 0;
@@ -29,4 +30,16 @@ int main() {
         k = k + 1;
     }
     return 1
+=======
+int func()
+{
+int i = 10;
+return i;
+}
+
+int main()
+{
+int i;
+i = func();
+>>>>>>> cyh_lab3
 }

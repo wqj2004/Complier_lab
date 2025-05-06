@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 int test9_a(int aa) {
     return aa + 3;
 }
@@ -14,3 +15,16 @@ int test9() {
     return test9(test9_b(test9(test9_a(a)), 1.2);
 }
 
+=======
+struct Position
+{
+    float x,y;
+};
+int func(int a);
+
+int func(struct Position p);
+
+int main(){
+    
+}
+>>>>>>> cyh_lab3

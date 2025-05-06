@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 struct Application {
 	int id;
 	float name;
@@ -29,3 +30,17 @@ int main() {
 	float k = 1.2;
 	return verify(generateApplication(a, k, b);
 }
+=======
+int func()
+{
+    int i = 10;
+    return i;
+}
+
+int main()
+{
+    int i;
+    int i, j;
+    i = func();
+}
+>>>>>>> cyh_lab3

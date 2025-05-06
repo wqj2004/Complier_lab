@@ -1,0 +1,72 @@
+FUNCTION add :
+t3 := temp
+t4 := #0
+t5 := t4 * #4
+t6 := t3 + t5
+t1 := *t6
+t7 := temp
+t8 := #1
+t9 := t8 * #4
+t10 := t7 + t9
+t2 := *t10
+t0 := t1 + t2
+RETURN t0
+FUNCTION main :
+LABEL label0 :
+t11 := i
+t12 := #2
+IF t11 < t12 GOTO label1
+GOTO label2
+LABEL label1 :
+LABEL label3 :
+t13 := j
+t14 := #2
+IF t13 < t14 GOTO label4
+GOTO label5
+LABEL label4 :
+t15 := op
+t16 := j
+t17 := t16 * #4
+t18 := t15 + t17
+t20 := i
+t21 := j
+t19 := t20 + t21
+*t18 := t19
+t23 := j
+t24 := #1
+t22 := t23 + t24
+j := t22
+GOTO label3
+LABEL label5 :
+t26 := r
+t27 := #0
+t28 := t27 * #8
+t29 := t26 + t28
+t25 := *t29
+t30 := i
+t31 := t30 * #4
+t32 := t25 + t31
+t34 := op
+ARG t34
+t33 := CALL add
+*t32 := t33
+t37 := r
+t38 := #0
+t39 := t38 * #8
+t40 := t37 + t39
+t36 := *t40
+t41 := i
+t42 := t41 * #4
+t43 := t36 + t42
+t35 := *t43
+WRITE t35
+t45 := i
+t46 := #1
+t44 := t45 + t46
+i := t44
+t47 := #0
+j := t47
+GOTO label0
+LABEL label2 :
+t48 := #0
+RETURN t48

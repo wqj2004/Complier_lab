@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 struct Complex
 {
     float real, image;
@@ -6,4 +7,15 @@ struct Complex
 {
     struct Complex x;
     y.image = 3.5;
+=======
+int func(int i)
+{
+    return i;
+}
+int func(){
+    return 0;
+}
+int main(){
+    
+>>>>>>> cyh_lab3
 }

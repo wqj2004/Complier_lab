@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 int test5(int a, int b)
 {
     int c = 3;
@@ -7,4 +8,18 @@ int test5(int a, int b)
         d[c] = d[] - 1;
     }
     return b;
+=======
+struct Position
+{
+    float x;
+};
+
+struct Position
+{
+    int y;
+};
+
+int main()
+{
+>>>>>>> cyh_lab3
 }

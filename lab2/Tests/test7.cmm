@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 int main()
 {
 	int i = 1;
 	int j = 2;
+=======
+int main()
+{
+    float j;
+    19+j;
+>>>>>>> cyh_lab3
 }

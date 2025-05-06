@@ -99,7 +99,7 @@ typedef struct Object
 // 符号表中hash table的定义
 typedef struct HashTable
 {
-    pobj *hashlist
+    pobj *hashlist;
 } hashtab;
 
 // 符号表中stack的定义

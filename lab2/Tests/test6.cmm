@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 int main()
 {
     int i = 09;
     int j = 0x3G;
+=======
+int main()
+{
+    int i;
+    10 = i;
+>>>>>>> cyh_lab3
 }

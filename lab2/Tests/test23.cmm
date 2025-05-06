@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 int verify(int ready) {
 	int tem = 0;
 	int i = 2;
@@ -26,3 +27,22 @@ int main() {
 	}
 	return count;
 }
+=======
+struct Temp1
+{
+int i;
+float j;
+};
+
+struct Temp2
+{
+int x;
+};
+
+int main()
+{
+struct Temp1 t1;
+struct Temp2 t2;
+t1 = t2;
+}
+>>>>>>> cyh_lab3
