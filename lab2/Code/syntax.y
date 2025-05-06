@@ -101,6 +101,7 @@ ExtDefList : ExtDef ExtDefList  { $$=create_node("ExtDefList",type_nter,@$.first
 ExtDef : Specifier ExtDecList SEMI  { $$=create_node("ExtDef",type_nter,@$.first_line,3,$1,$2,$3); } //外部定义要么是一个类型声明+外部(变量)声明
     | Specifier SEMI                { $$=create_node("ExtDef",type_nter,@$.first_line,2,$1,$2); } //要么是一个类型声明+;(一般和struct一起使用)
     | Specifier FunDec CompSt       { $$=create_node("ExtDef",type_nter,@$.first_line,3,$1,$2,$3); }//要么是一个类型声明+函数声明+{...}
+    | Specifier FunDec SEMI         { $$=create_node("ExtDef",type_nter,@$.first_line,3,$1,$2,$3); }//要么是一个类型声明+函数声明+;
 //    | error SEMI                    {yyerrok;}
 //    | Specifier error               {yyerrok;}
 //    | Specifier error SEMI          {yyerrok;}

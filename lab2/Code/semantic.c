@@ -834,13 +834,25 @@ Type Exp(Node *node, int *plval)
         //         | Exp DOT ID        a.b   左值
         exp1_type = Exp(node->firstchild, &exp1_lval);
         // TODO 添加一个不是a.b的判断
-        exp2_type = Exp(node->firstchild->nextsib->nextsib, &exp2_lval);
-        if (exp1_type == NULL || exp2_type == NULL)
+        int tmp = strcmp(node->firstchild->nextsib->name, "DOT");
+        if (tmp)
         {
-            return NULL;
+            exp2_type = Exp(node->firstchild->nextsib->nextsib, &exp2_lval);
+            if (exp1_type == NULL || exp2_type == NULL)
+            {
+                return NULL;
+            }
         }
+        else
+        {
+            if (exp1_type == NULL)
+            {
+                return NULL;
+            }
+        }
+
         Node *opnode = node->firstchild->nextsib;
-        if (!strcmp(opnode->val.id_val, "LB"))
+        if (!strcmp(opnode->name, "LB"))
         {
             // 数组下标
             // Exp LB Exp RB     a[b]
@@ -865,7 +877,7 @@ Type Exp(Node *node, int *plval)
             }
             return copyTYPE(exp1_type->u.array.elem);
         }
-        else if (!strcmp(opnode->val.id_val, "DOT"))
+        else if (!strcmp(opnode->name, "DOT"))
         {
             // 结构体成员
             // Exp DOT ID
@@ -900,7 +912,7 @@ Type Exp(Node *node, int *plval)
             }
             return copyTYPE(field->type);
         }
-        else if (!strcmp(opnode->val.id_val, "ASSIGNOP"))
+        else if (!strcmp(opnode->name, "ASSIGNOP"))
         {
             // 赋值
             // Exp ASSIGNOP Exp  a = 5
@@ -937,7 +949,7 @@ Type Exp(Node *node, int *plval)
                 semanticError(TYPE_MISMATCH_OP, node->fline, "Type mismatched for operator");
                 return NULL;
             }
-            char *opname = opnode->val.id_val;
+            char *opname = opnode->name;
             if (!strcmp(opname, "AND") || !strcmp(opname, "OR") || !strcmp(opname, "RELOP"))
             {
                 return newTYPE(BASIC, INT_TYPE);
