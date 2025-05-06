@@ -6,12 +6,13 @@
 #define hashsz 0x3fff
 #define max_st_depth 20
 
-int STRcmp(const char *_Str1,const char *_Str2){
-    if(_Str1 ==_Str2)
+int STRcmp(const char *_Str1, const char *_Str2)
+{
+    if (_Str1 == _Str2)
         return 0;
-    if(_Str1 == NULL || _Str2 == NULL)
+    if (_Str1 == NULL || _Str2 == NULL)
         return -1;
-    return strcmp(_Str1,_Str2);
+    return strcmp(_Str1, _Str2);
 }
 
 Node *find_node(Node *start, char *name)
@@ -24,12 +25,11 @@ Node *find_node(Node *start, char *name)
     while (cur != NULL)
     {
         if (!STRcmp(cur->name, name))
-        return cur;
+            return cur;
         cur = cur->nextsib;
     }
     return NULL;
 }
-
 
 unsigned hashfn(char *name)
 {
@@ -79,7 +79,8 @@ Type newTYPE(TypeKind kind, ...)
 
 Type copyTYPE(Type type)
 {
-    if(type == NULL){
+    if (type == NULL)
+    {
         return NULL;
     }
     TypeKind kind = type->kind;
@@ -219,7 +220,6 @@ void insert_hashobj(phash hashtab, pobj obj)
     pobj *objlist = hashtab->hashlist;
     obj->hash_next = objlist[index];
     objlist[index] = obj;
-    
 }
 void delete_hashobj(phash hashtab, pobj obj)
 {
@@ -319,7 +319,7 @@ void delete_stack_curdepth(ptab table)
         cur_obj = next;
     }
     stack->stacklist[cur_depth] = NULL;
-    //stack->cur_stack_depth--;//////////CHANGE
+    // stack->cur_stack_depth--;//////////CHANGE
 }
 obj *searchtab(ptab table, char *name)
 {
@@ -343,7 +343,7 @@ obj *searchtab_func(ptab table, char *name)
 // TODO
 int objConflict(ptab table, pobj obj)
 {
-    pobj curobj = searchtab(table, obj->name);////////////CHANGE
+    pobj curobj = searchtab(table, obj->name); ////////////CHANGE
     if (curobj == NULL)
         return 0;
     while (curobj != NULL)
@@ -371,23 +371,24 @@ int objConflict(ptab table, pobj obj)
 
 void showTable()
 {
-    if(!debuger)return;
+    if (!debuger)
+        return;
     phash hashtab = table->hashtab;
     pobj *objlist = hashtab->hashlist;
-    
+
     printf("\n");
     printf("Start Show Table\n");
     for (int i = 0; i < hashsz; i++)
     {
         pobj obj = objlist[i];
-        if(obj == NULL)
+        if (obj == NULL)
             continue;
         else
         {
             printf("Hash index: %d\n", i);
         }
         while (obj != NULL)
-        {   
+        {
             printf("Name: %s, Type: %d,", obj->name, obj->type->kind);
             obj = obj->hash_next;
         }
@@ -397,22 +398,26 @@ void showTable()
     return;
 }
 
-void DetectFunc_Undefined(){
-    stack* st= table->st;
-    pobj * stacklist =st->stacklist;
+void DetectFunc_Undefined()
+{
+    stack *st = table->st;
+    pobj *stacklist = st->stacklist;
     pobj cur_obj = stacklist[0];
     assert(st->cur_stack_depth == 0);
-    while(cur_obj !=NULL){
+    while (cur_obj != NULL)
+    {
         Type cur_type = cur_obj->type;
-        if(cur_type->kind == FUNCTION){
-            if(cur_type->u.function.state == undefined){
+        if (cur_type->kind == FUNCTION)
+        {
+            if (cur_type->u.function.state == undefined)
+            {
                 semanticError(ONLY_DECLARED_FUNC, cur_type->u.function.lineno, "Undefined Function");
             }
         }
         cur_obj = cur_obj->stack_next;
     }
 
-    return ;
+    return;
 }
 
 // Program     : ExtDefList
@@ -421,12 +426,12 @@ void Program(Node *node)
     if (node == NULL)
         return;
     Node *node1 = find_node(node, "ExtDefList");
-    if(node1 == NULL)
+    if (node1 == NULL)
     {
         return;
     }
     if (!STRcmp("ExtDefList", node->firstchild->name))
-    {   
+    {
         ExtDefList(node1);
     }
     DetectFunc_Undefined();
@@ -439,9 +444,9 @@ void ExtDefList(Node *node)
 {
     if (node == NULL)
         return;
-    
-    if (!STRcmp(node->firstchild->name, "ExtDef"))///////CHANGE
-    {   
+
+    if (!STRcmp(node->firstchild->name, "ExtDef")) ///////CHANGE
+    {
         ExtDef(node->firstchild);
         ExtDefList(node->firstchild->nextsib);
     }
@@ -456,7 +461,7 @@ void ExtDefList(Node *node)
 //             | Specifier FunDec CompSt
 //             | Specifier FunDec SEMI
 void ExtDef(Node *node)
-{   
+{
     Type spec = Specifier(node->firstchild);
     if (!STRcmp(node->firstchild->nextsib->name, "ExtDecList"))
     {
@@ -483,7 +488,7 @@ void ExtDecList(Node *node, Type deftype)
 {
     if (node == NULL)
         return;
-    int tmp=0;
+    int tmp = 0;
     while (node->firstchild->nextsib != NULL)
     {
         pobj obj = (pobj)VarDec(node->firstchild, deftype, NULL);
@@ -539,7 +544,7 @@ pobj FunDec(Node *node, Type rettype, Funstate isdef)
     {
         if (funobj->type->u.function.state == defined && isdef == defined)
         {
-            //semanticError(REDEF_FUNC, node->firstchild->val.id_val, "Redefined function");
+            // semanticError(REDEF_FUNC, node->firstchild->val.id_val, "Redefined function");
             ////////////////CHANGE
             semanticError(REDEF_FUNC, node->firstchild->fline, "Redefined function");
             return NULL;
@@ -620,12 +625,12 @@ void CompSt(Node *node, pobj funobj)
         }
     }
     Node *deflistnode = find_node(node, "DefList");
-    if (deflistnode!=NULL)
+    if (deflistnode != NULL)
     {
         DefList(node->firstchild->nextsib, NULL);
     }
     Node *stmtnode = find_node(node, "StmtList");
-    if (stmtnode!=NULL)
+    if (stmtnode != NULL)
     {
         StmtList(stmtnode, funobj);
     }
@@ -638,8 +643,8 @@ void CompSt(Node *node, pobj funobj)
 //         ;
 void StmtList(Node *node, pobj funobj)
 {
-    while (node!= NULL)
-    {   
+    while (node != NULL)
+    {
         assert(node->firstchild != NULL);
         Stmt(node->firstchild, funobj);
         node = node->firstchild->nextsib;
@@ -655,7 +660,7 @@ void StmtList(Node *node, pobj funobj)
 //         ;
 void Stmt(Node *node, pobj funobj)
 {
-    //assert(node != NULL);
+    // assert(node != NULL);
     Type type = NULL;
     Type rettype = NULL;
     if (!STRcmp(node->firstchild->name, "Exp"))
@@ -696,7 +701,7 @@ void Stmt(Node *node, pobj funobj)
     {
         int lval = 0;
         type = Exp(node->firstchild->nextsib->nextsib, &lval);
-        Node *stmtnode = node->firstchild->nextsib->nextsib->nextsib;
+        Node *stmtnode = node->firstchild->nextsib->nextsib->nextsib->nextsib;
         Stmt(stmtnode, funobj);
     }
     else
@@ -767,7 +772,7 @@ void Dec(Node *node, Type deftype, FieldList structfield)
             {
                 if (!STRcmp(curfield->name, field->name))
                 {
-                    //semanticError(REDEF_FIELD, node->firstchild->val.id_val, "Redefined field");
+                    // semanticError(REDEF_FIELD, node->firstchild->val.id_val, "Redefined field");
                     /////////////CHANGE
                     semanticError(REDEF_FIELD, node->firstchild->fline, "Redefined field");
                     freeFieldList(field);
@@ -1052,7 +1057,7 @@ Type Exp(Node *node, int *plval)
                 semanticError(TYPE_MISMATCH_OP, node->fline, "Type mismatched for operator");
                 return NULL;
             }
-            else if(exp1_type->u.basic != exp2_type->u.basic)
+            else if (exp1_type->u.basic != exp2_type->u.basic)
             {
                 semanticError(TYPE_MISMATCH_OP, node->fline, "Type mismatched for operator");
                 return NULL;
@@ -1105,7 +1110,7 @@ Type Exp(Node *node, int *plval)
         // ID
         pobj idobj = searchtab(table, node->firstchild->val.id_val);
         // TODO
-        if (idobj == NULL)/////////CHANGE  
+        if (idobj == NULL) /////////CHANGE
         {
             if (node->firstchild->nextsib != NULL)
             {
@@ -1307,6 +1312,3 @@ int isStructType(pobj obj)
         return 0;
     return obj->type->kind == STRUCTURE;
 }
-
-
-
