@@ -22,7 +22,7 @@
         yylval.node=create_node(name,type,fline,0);
     }
 
-    void print_error(char type , int line, char* msg){
+    void print_error(char type , int line, const char* msg){
         if(type=='A')
         {
             lexerror_count++;
@@ -118,7 +118,7 @@ STRING      \"([^\"\n]|\\\")*\"
 
 "//"[^\n]*    {}
 "/*"          {BEGIN(COMMENT);}
-<COMMENT>"*/" {BEGIN(INITIAL);}
+<COMMENT>"*/" { BEGIN(INITIAL); }
 <COMMENT>\n   {yycolumn=1;}
 <COMMENT>.    {}
 .             {print_error('A',yylineno,"Illegal character");}

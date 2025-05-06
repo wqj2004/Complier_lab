@@ -1,11 +1,24 @@
 %{
     #include "lex.yy.c" 
+    //#include "common.h"   
+    //extern void yyerrok;
     int synerror_count=0;
     Node* root=NULL;
     int last_error_line=0;
-    extern void print_error(char type , int line, const char* msg);
-    extern void yyerror(const char* msg);
-    #define YYERROR_VERBOSE 1
+    extern void print_error(char type , int line, char* msg);
+    void yyerror(char* msg)
+    {
+        if(yylineno>last_error_line)
+        {
+            synerror_count++;
+            print_error('B',yylineno,msg);
+            //printf("lastline:%d\n",last_error_line);
+            //last_error_line=yylineno;
+        }
+    }
+
+    
+    
 %}
 
 %union {
@@ -14,8 +27,8 @@
 
 %token <node> INT      
 %token <node> FLOAT    
-%token <node> ID            
-%token <node> STRING
+%token <node> ID    
+%token <node> STRING        
 %token <node> SEMI COMMA    
 %token <node> ASSIGNOP RELOP    
 %token <node> PLUS MINUS STAR DIV      
@@ -59,6 +72,7 @@ Args                    实际参数列表
 */
 
 
+%nonassoc error  //傻逼吧
 %right ASSIGNOP
 %left OR
 %left AND 
@@ -87,20 +101,25 @@ ExtDefList : ExtDef ExtDefList  { $$=create_node("ExtDefList",type_nter,@$.first
 ExtDef : Specifier ExtDecList SEMI  { $$=create_node("ExtDef",type_nter,@$.first_line,3,$1,$2,$3); } //外部定义要么是一个类型声明+外部(变量)声明
     | Specifier SEMI                { $$=create_node("ExtDef",type_nter,@$.first_line,2,$1,$2); } //要么是一个类型声明+;(一般和struct一起使用)
     | Specifier FunDec CompSt       { $$=create_node("ExtDef",type_nter,@$.first_line,3,$1,$2,$3); }//要么是一个类型声明+函数声明+{...}
-    | Specifier FunDec SEMI         { $$=create_node("ExtDef",type_nter,@$.first_line,3,$1,$2,$3); }//要么是一个类型声明+函数声明+;
-    | error SEMI                    {yyerror("syntax vardef error"); yyerrok;}
-    | Specifier error SEMI          {yyerror("syntax vardef error"); yyerrok;}
-    | error Specifier SEMI          {yyerror("syntax vardef error"); yyerrok;}
+//    | error SEMI                    {yyerrok;}
+//    | Specifier error               {yyerrok;}
+//    | Specifier error SEMI          {yyerrok;}
+    //| Specifier error CompSt        {yyerrok;}
+    | error SEMI                    {yyerror("syntax vardef error");}
+    | error FunDec CompSt           {print_error('B',@1.first_line,"syntax ExtDef spec error");}
+
+    | error CompSt                  {print_error('B',@1.first_line,"syntax ExtDef error");}
+
     ;  
 
 ExtDecList : VarDec             { $$=create_node("ExtDecList",type_nter, @$.first_line,1,$1); }  //外部声明要么是一个单独的变量声明
     | VarDec COMMA ExtDecList   { $$=create_node("ExtDecList",type_nter, @$.first_line,3,$1,$2,$3); }//要么就是多个变量声明而中间用,连接
-    | VarDec error ExtDefList   {yyerror("syntax ExtDec error"); yyerrok;}
     ;
 
 // Specifiers
 Specifier : TYPE        { $$=create_node("Specifier",type_nter, @$.first_line,1,$1); }//要么就是基本类型(int/float)
     | StructSpecifier   { $$=create_node("Specifier",type_nter, @$.first_line,1,$1); }//要么就是复合类型(struct)
+//    | error             {yyerror("syntax specifier error");yyerrok; }          
     ;
 
 StructSpecifier : STRUCT OptTag LC DefList RC   { $$=create_node("StructSpecifier",type_nter, @$.first_line,5,$1,$2,$3,$4,$5); }
@@ -123,7 +142,9 @@ Tag : ID    { $$=create_node("Tag",type_nter, @$.first_line,1,$1); }
 //Declarators
 VarDec : ID                 { $$=create_node("VarDec",type_nter, @$.first_line,1,$1); } //普通变量
     | VarDec LB INT RB      { $$=create_node("VarDec",type_nter, @$.first_line,4,$1,$2,$3,$4); }//数组变量
-    | VarDec LB error RB              { yyerror("syntax VarDec error"); yyerrok;}
+    | VarDec LB error RB    { yyerror("syntax array_error error");}
+    | VarDec LB INT error   { yyerror("syntax VarDec_RB error");}
+//    | error LB INT RB       {yyerrok;}
     ; 
 
 FunDec : ID LP VarList RP   { $$=create_node("FunDec",type_nter, @$.first_line,4,$1,$2,$3,$4); } //有参数的函数声明
@@ -197,6 +218,7 @@ DecList : Dec               { $$=create_node("DecList",type_nter, @$.first_line,
 
 Dec : VarDec                { $$=create_node("Dec",type_nter, @$.first_line,1,$1); }//单个变量声明,分为带初值/不带初值地声明
     | VarDec ASSIGNOP Exp   { $$=create_node("Dec",type_nter, @$.first_line,3,$1,$2,$3); }
+//    | VarDec ASSIGNOP error { yyerror("syntax Dec_exp error");}
     ;
 
 // Expressions
@@ -240,11 +262,38 @@ Exp : Exp ASSIGNOP Exp      { $$=create_node("Exp",type_nter, @$.first_line,3,$1
     ;
 Args : Exp COMMA Args       { $$=create_node("Args",type_nter, @$.first_line,3,$1,$2,$3); }//非空参数列表,由","间隔，每一个参数是一个exp
     | Exp                   { $$=create_node("Args",type_nter, @$.first_line,1,$1); }
+//    | error COMMA Exp                               {}
     ;
 %%
 
-void yyerror(const char* msg)
-{
-    synerror_count++;
-    print_error('B',yylineno,msg);
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

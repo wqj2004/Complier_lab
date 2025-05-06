@@ -5,7 +5,7 @@ extern void yyrestart(FILE *input_file);
 extern int synerror_count;
 extern int lexerror_count;
 extern Node *root;
-ptab table = NULL; ////////CHANGE 改成了全局变量
+ptab table = NULL;////////CHANGE 改成了全局变量
 
 int main(int argc, char **argv)
 {
@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 
     if (lexerror_count == 0 && synerror_count == 0)
     {
-        table = newTable(); ///////////CHANGE
+        table=newTable();///////////CHANGE
         Program(root);
     }
 
