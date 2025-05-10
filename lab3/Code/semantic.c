@@ -6,26 +6,61 @@
 #define hashsz 0x3fff
 #define max_st_depth 20
 
-int STRcmp(const char *_Str1, const char *_Str2)
-{
-    if (_Str1 == _Str2)
+const int lab3_nodel = 1;
+
+void syscall_init_() {
+    // Create read() function (no arguments, returns int)
+    Type read_ret_type = newTYPE(BASIC, INT_TYPE);
+    Type read_type = newTYPE(FUNCTION, 0, NULL, read_ret_type, defined, 0);
+    pobj read_obj = newObj("read", 0, read_type);
+    insert_tabobj(table, read_obj);
+    
+    // Create write() function (takes int argument, returns int)
+    Type write_ret_type = newTYPE(BASIC, INT_TYPE);
+    FieldList write_param = newFieldList("value", newTYPE(BASIC, INT_TYPE));
+    Type write_type = newTYPE(FUNCTION, 1, write_param, write_ret_type, defined, 0);
+    pobj write_obj = newObj("write", 0, write_type);
+    insert_tabobj(table, write_obj);
+}
+
+// 如果相同就返回0，如果不同返回1或者-1
+int strcmp_safe_(const char *_Str1,const char *_Str2){
+    /*如果相同返回0*/
+    if(_Str1 ==_Str2)
         return 0;
-    if (_Str1 == NULL || _Str2 == NULL)
+    if(_Str1 == NULL || _Str2 == NULL)
         return -1;
-    return strcmp(_Str1, _Str2);
+    return strcmp(_Str1,_Str2);
 }
 
 Node *find_node(Node *start, char *name)
 {
     if (start == NULL)
         return NULL;
-    if (!STRcmp(start->name, name))
+    if (!strcmp_safe_(start->name, name))
         return start;
     Node *cur = start->firstchild;
     while (cur != NULL)
     {
-        if (!STRcmp(cur->name, name))
-            return cur;
+        if (!strcmp_safe_(cur->name, name))
+        return cur;
+        cur = cur->nextsib;
+    }
+    return NULL;
+}
+
+Node *find_node_recursive(Node *start, char *name)
+{
+    if (start == NULL)
+        return NULL;
+    if (!strcmp_safe_(start->name, name))
+        return start;
+    Node *cur = start->firstchild;
+    while (cur != NULL)
+    {
+        Node *result = find_node_recursive(cur, name);
+        if (result != NULL)
+            return result;
         cur = cur->nextsib;
     }
     return NULL;
@@ -79,8 +114,7 @@ Type newTYPE(TypeKind kind, ...)
 
 Type copyTYPE(Type type)
 {
-    if (type == NULL)
-    {
+    if(type == NULL){
         return NULL;
     }
     TypeKind kind = type->kind;
@@ -220,9 +254,11 @@ void insert_hashobj(phash hashtab, pobj obj)
     pobj *objlist = hashtab->hashlist;
     obj->hash_next = objlist[index];
     objlist[index] = obj;
+    
 }
 void delete_hashobj(phash hashtab, pobj obj)
 {
+    if(lab3_nodel) return;
     unsigned index = hashfn(obj->name);
     pobj *objlist = hashtab->hashlist;
     pobj cur_obj = objlist[index];
@@ -248,7 +284,7 @@ obj *searchhash(phash hashtab, char *name)
     pobj obj = objlist[index];
     while (obj != NULL)
     {
-        if (STRcmp(obj->name, name) == 0)
+        if (strcmp_safe_(obj->name, name) == 0)
             return obj;
         obj = obj->hash_next;
     }
@@ -308,6 +344,7 @@ void insert_tabobj(ptab table, pobj obj)
 }
 void delete_stack_curdepth(ptab table)
 {
+    if(lab3_nodel) return;
     pstack stack = table->st;
     int cur_depth = stack->cur_stack_depth;
     pobj cur_obj = stack->stacklist[cur_depth];
@@ -319,7 +356,7 @@ void delete_stack_curdepth(ptab table)
         cur_obj = next;
     }
     stack->stacklist[cur_depth] = NULL;
-    // stack->cur_stack_depth--;//////////CHANGE
+    //stack->cur_stack_depth--;//////////CHANGE
 }
 obj *searchtab(ptab table, char *name)
 {
@@ -333,7 +370,7 @@ obj *searchtab_func(ptab table, char *name)
     pobj obj = objlist[index];
     while (obj != NULL)
     {
-        if (STRcmp(obj->name, name) == 0 && obj->type->kind == FUNCTION)
+        if (strcmp_safe_(obj->name, name) == 0 && obj->type->kind == FUNCTION)
             return obj;
         obj = obj->hash_next;
     }
@@ -343,12 +380,12 @@ obj *searchtab_func(ptab table, char *name)
 // TODO
 int objConflict(ptab table, pobj obj)
 {
-    pobj curobj = searchtab(table, obj->name); ////////////CHANGE
+    pobj curobj = searchtab(table, obj->name);////////////CHANGE
     if (curobj == NULL)
         return 0;
     while (curobj != NULL)
     {
-        if (!STRcmp(curobj->name, obj->name))
+        if (!strcmp_safe_(curobj->name, obj->name))
         {
             if (curobj->type->kind == STRUCTURE || obj->type->kind == STRUCTURE)
             {
@@ -371,24 +408,23 @@ int objConflict(ptab table, pobj obj)
 
 void showTable()
 {
-    if (!debuger)
-        return;
+    if(!debuger)return;
     phash hashtab = table->hashtab;
     pobj *objlist = hashtab->hashlist;
-
+    
     printf("\n");
     printf("Start Show Table\n");
     for (int i = 0; i < hashsz; i++)
     {
         pobj obj = objlist[i];
-        if (obj == NULL)
+        if(obj == NULL)
             continue;
         else
         {
             printf("Hash index: %d\n", i);
         }
         while (obj != NULL)
-        {
+        {   
             printf("Name: %s, Type: %d,", obj->name, obj->type->kind);
             obj = obj->hash_next;
         }
@@ -398,40 +434,37 @@ void showTable()
     return;
 }
 
-void DetectFunc_Undefined()
-{
-    stack *st = table->st;
-    pobj *stacklist = st->stacklist;
+void DetectFunc_Undefined(){
+    stack* st= table->st;
+    pobj * stacklist =st->stacklist;
     pobj cur_obj = stacklist[0];
     assert(st->cur_stack_depth == 0);
-    while (cur_obj != NULL)
-    {
+    while(cur_obj !=NULL){
         Type cur_type = cur_obj->type;
-        if (cur_type->kind == FUNCTION)
-        {
-            if (cur_type->u.function.state == undefined)
-            {
+        if(cur_type->kind == FUNCTION){
+            if(cur_type->u.function.state == undefined){
                 semanticError(ONLY_DECLARED_FUNC, cur_type->u.function.lineno, "Undefined Function");
             }
         }
         cur_obj = cur_obj->stack_next;
     }
 
-    return;
+    return ;
 }
 
 // Program     : ExtDefList
 void Program(Node *node)
 {
+    syscall_init_();
     if (node == NULL)
         return;
     Node *node1 = find_node(node, "ExtDefList");
-    if (node1 == NULL)
+    if(node1 == NULL)
     {
         return;
     }
-    if (!STRcmp("ExtDefList", node->firstchild->name))
-    {
+    if (!strcmp_safe_("ExtDefList", node->firstchild->name))
+    {   
         ExtDefList(node1);
     }
     DetectFunc_Undefined();
@@ -444,9 +477,9 @@ void ExtDefList(Node *node)
 {
     if (node == NULL)
         return;
-
-    if (!STRcmp(node->firstchild->name, "ExtDef")) ///////CHANGE
-    {
+    
+    if (!strcmp_safe_(node->firstchild->name, "ExtDef"))///////CHANGE
+    {   
         ExtDef(node->firstchild);
         ExtDefList(node->firstchild->nextsib);
     }
@@ -461,15 +494,15 @@ void ExtDefList(Node *node)
 //             | Specifier FunDec CompSt
 //             | Specifier FunDec SEMI
 void ExtDef(Node *node)
-{
+{   
     Type spec = Specifier(node->firstchild);
-    if (!STRcmp(node->firstchild->nextsib->name, "ExtDecList"))
+    if (!strcmp_safe_(node->firstchild->nextsib->name, "ExtDecList"))
     {
         ExtDecList(node->firstchild->nextsib, spec);
     }
-    else if (!STRcmp(node->firstchild->nextsib->name, "FunDec"))
+    else if (!strcmp_safe_(node->firstchild->nextsib->name, "FunDec"))
     {
-        if (!STRcmp(node->firstchild->nextsib->nextsib->name, "CompSt"))
+        if (!strcmp_safe_(node->firstchild->nextsib->nextsib->name, "CompSt"))
         {
             pobj funobj = FunDec(node->firstchild->nextsib, spec, defined);
             CompSt(node->firstchild->nextsib->nextsib, funobj);
@@ -488,7 +521,7 @@ void ExtDecList(Node *node, Type deftype)
 {
     if (node == NULL)
         return;
-    int tmp = 0;
+    int tmp=0;
     while (node->firstchild->nextsib != NULL)
     {
         pobj obj = (pobj)VarDec(node->firstchild, deftype, NULL);
@@ -530,10 +563,11 @@ pobj FunDec(Node *node, Type rettype, Funstate isdef)
     if (funobj == NULL)
     {
         Type funtype = newTYPE(FUNCTION, 0, NULL, rettype, isdef, node->fline);
-        if (!STRcmp(node->firstchild->nextsib->nextsib->name, "VarList"))
+        if (!strcmp_safe_(node->firstchild->nextsib->nextsib->name, "VarList"))
         {
             VarList(node->firstchild->nextsib->nextsib, funtype);
         }
+        // 添加到符号表
         funobj = newObj(node->firstchild->val.id_val, 0, funtype);
         // 添加一个objConflict
         insert_tabobj(table, funobj);
@@ -544,7 +578,7 @@ pobj FunDec(Node *node, Type rettype, Funstate isdef)
     {
         if (funobj->type->u.function.state == defined && isdef == defined)
         {
-            // semanticError(REDEF_FUNC, node->firstchild->val.id_val, "Redefined function");
+            //semanticError(REDEF_FUNC, node->firstchild->val.id_val, "Redefined function");
             ////////////////CHANGE
             semanticError(REDEF_FUNC, node->firstchild->fline, "Redefined function");
             return NULL;
@@ -552,7 +586,7 @@ pobj FunDec(Node *node, Type rettype, Funstate isdef)
         else
         {
             Type funtype = newTYPE(FUNCTION, 0, NULL, rettype, isdef, node->fline);
-            if (!STRcmp(node->firstchild->nextsib->nextsib->name, "VarList"))
+            if (!strcmp_safe_(node->firstchild->nextsib->nextsib->name, "VarList"))
             {
                 VarList(node->firstchild->nextsib->nextsib, funtype);
             }
@@ -625,12 +659,12 @@ void CompSt(Node *node, pobj funobj)
         }
     }
     Node *deflistnode = find_node(node, "DefList");
-    if (deflistnode != NULL)
+    if (deflistnode!=NULL)
     {
         DefList(node->firstchild->nextsib, NULL);
     }
     Node *stmtnode = find_node(node, "StmtList");
-    if (stmtnode != NULL)
+    if (stmtnode!=NULL)
     {
         StmtList(stmtnode, funobj);
     }
@@ -643,8 +677,8 @@ void CompSt(Node *node, pobj funobj)
 //         ;
 void StmtList(Node *node, pobj funobj)
 {
-    while (node != NULL)
-    {
+    while (node!= NULL)
+    {   
         assert(node->firstchild != NULL);
         Stmt(node->firstchild, funobj);
         node = node->firstchild->nextsib;
@@ -660,19 +694,21 @@ void StmtList(Node *node, pobj funobj)
 //         ;
 void Stmt(Node *node, pobj funobj)
 {
-    // assert(node != NULL);
+    //assert(node != NULL);
+    // if(node->firstchild == NULL)
+    //     return;
     Type type = NULL;
     Type rettype = NULL;
-    if (!STRcmp(node->firstchild->name, "Exp"))
+    if (!strcmp_safe_(node->firstchild->name, "Exp"))
     {
         int lval = 0;
         type = Exp(node->firstchild, &lval);
     }
-    else if (!STRcmp(node->firstchild->name, "CompSt"))
+    else if (!strcmp_safe_(node->firstchild->name, "CompSt"))
     {
         CompSt(node->firstchild, funobj);
     }
-    else if (!STRcmp(node->firstchild->name, "RETURN"))
+    else if (!strcmp_safe_(node->firstchild->name, "RETURN"))
     {
         if (funobj != NULL)
         {
@@ -685,7 +721,7 @@ void Stmt(Node *node, pobj funobj)
             }
         }
     }
-    else if (!STRcmp(node->firstchild->name, "IF"))
+    else if (!strcmp_safe_(node->firstchild->name, "IF"))
     {
         int lval = 0;
         type = Exp(node->firstchild->nextsib->nextsib, &lval);
@@ -697,7 +733,7 @@ void Stmt(Node *node, pobj funobj)
             Stmt(stmtnode->nextsib->nextsib, funobj);
         }
     }
-    else if (!STRcmp(node->firstchild->name, "WHILE"))
+    else if (!strcmp_safe_(node->firstchild->name, "WHILE"))
     {
         int lval = 0;
         type = Exp(node->firstchild->nextsib->nextsib, &lval);
@@ -770,9 +806,9 @@ void Dec(Node *node, Type deftype, FieldList structfield)
             // structfield是Type_中的structure这个值,是一个指针,所以需要用到它的tail
             while (curfield != NULL)
             {
-                if (!STRcmp(curfield->name, field->name))
+                if (!strcmp_safe_(curfield->name, field->name))
                 {
-                    // semanticError(REDEF_FIELD, node->firstchild->val.id_val, "Redefined field");
+                    //semanticError(REDEF_FIELD, node->firstchild->val.id_val, "Redefined field");
                     /////////////CHANGE
                     semanticError(REDEF_FIELD, node->firstchild->fline, "Redefined field");
                     freeFieldList(field);
@@ -858,7 +894,7 @@ void *VarDec(Node *node, Type deftype, FieldList structfield)
     {
         FieldList newfield = newFieldList(varname, deftype);
         // 在struct内部
-        if (!STRcmp(node->firstchild->name, "ID"))
+        if (!strcmp_safe_(node->firstchild->name, "ID"))
         {
             // 普通变量
             return newfield;
@@ -881,7 +917,7 @@ void *VarDec(Node *node, Type deftype, FieldList structfield)
     {
         // 不在struct内部
         pobj newobj = newObj(varname, table->st->cur_stack_depth, deftype);
-        if (!STRcmp(node->firstchild->name, "ID"))
+        if (!strcmp_safe_(node->firstchild->name, "ID"))
         {
             // 普通变量
             return newobj;
@@ -929,7 +965,7 @@ Type Exp(Node *node, int *plval)
 {
     int exp1_lval = 0, exp2_lval = 0;
     Type exp1_type = NULL, exp2_type = NULL;
-    if (!STRcmp(node->firstchild->name, "Exp"))
+    if (!strcmp_safe_(node->firstchild->name, "Exp"))
     {
         //           Exp ASSIGNOP Exp  a = 5
         //         | Exp AND Exp       a&b
@@ -942,7 +978,7 @@ Type Exp(Node *node, int *plval)
         //         | Exp LB Exp RB     a[b]  左值
         //         | Exp DOT ID        a.b   左值
         exp1_type = Exp(node->firstchild, &exp1_lval);
-        int tmp = STRcmp(node->firstchild->nextsib->name, "DOT");
+        int tmp = strcmp_safe_(node->firstchild->nextsib->name, "DOT");
         if (tmp)
         {
             exp2_type = Exp(node->firstchild->nextsib->nextsib, &exp2_lval);
@@ -960,7 +996,7 @@ Type Exp(Node *node, int *plval)
         }
 
         Node *opnode = node->firstchild->nextsib;
-        if (!STRcmp(opnode->name, "LB"))
+        if (!strcmp_safe_(opnode->name, "LB"))
         {
             // 数组下标
             // Exp LB Exp RB     a[b]
@@ -985,7 +1021,7 @@ Type Exp(Node *node, int *plval)
             }
             return copyTYPE(exp1_type->u.array.elem);
         }
-        else if (!STRcmp(opnode->name, "DOT"))
+        else if (!strcmp_safe_(opnode->name, "DOT"))
         {
             // 结构体成员
             // Exp DOT ID
@@ -998,7 +1034,7 @@ Type Exp(Node *node, int *plval)
             FieldList field = exp1_type->u.structure->tail;
             while (field != NULL)
             {
-                if (!STRcmp(field->name, idname))
+                if (!strcmp_safe_(field->name, idname))
                 {
                     break;
                 }
@@ -1020,7 +1056,7 @@ Type Exp(Node *node, int *plval)
             }
             return copyTYPE(field->type);
         }
-        else if (!STRcmp(opnode->name, "ASSIGNOP"))
+        else if (!strcmp_safe_(opnode->name, "ASSIGNOP"))
         {
             // 赋值
             // Exp ASSIGNOP Exp  a = 5
@@ -1057,13 +1093,13 @@ Type Exp(Node *node, int *plval)
                 semanticError(TYPE_MISMATCH_OP, node->fline, "Type mismatched for operator");
                 return NULL;
             }
-            else if (exp1_type->u.basic != exp2_type->u.basic)
+            else if(exp1_type->u.basic != exp2_type->u.basic)
             {
                 semanticError(TYPE_MISMATCH_OP, node->fline, "Type mismatched for operator");
                 return NULL;
             }
             char *opname = opnode->name;
-            if (!STRcmp(opname, "AND") || !STRcmp(opname, "OR") || !STRcmp(opname, "RELOP"))
+            if (!strcmp_safe_(opname, "AND") || !strcmp_safe_(opname, "OR") || !strcmp_safe_(opname, "RELOP"))
             {
                 return newTYPE(BASIC, INT_TYPE);
             }
@@ -1073,13 +1109,13 @@ Type Exp(Node *node, int *plval)
             }
         }
     }
-    else if (!STRcmp(node->firstchild->name, "LP"))
+    else if (!strcmp_safe_(node->firstchild->name, "LP"))
     {
         // LP Exp RP
         // (a)
         return Exp(node->firstchild->nextsib, plval);
     }
-    else if (!STRcmp(node->firstchild->name, "MINUS") || !STRcmp(node->firstchild->name, "NOT"))
+    else if (!strcmp_safe_(node->firstchild->name, "MINUS") || !strcmp_safe_(node->firstchild->name, "NOT"))
     {
         // MINUS Exp
         // -a
@@ -1097,20 +1133,20 @@ Type Exp(Node *node, int *plval)
         }
         *plval = 0;
         // TODO
-        if (!STRcmp(node->firstchild->name, "NOT"))
+        if (!strcmp_safe_(node->firstchild->name, "NOT"))
         {
             return newTYPE(BASIC, INT_TYPE);
         }
         return copyTYPE(exp1_type);
     }
-    else if (!STRcmp(node->firstchild->name, "ID"))
+    else if (!strcmp_safe_(node->firstchild->name, "ID"))
     {
         // ID LP Args RP
         // ID LP RP
         // ID
         pobj idobj = searchtab(table, node->firstchild->val.id_val);
         // TODO
-        if (idobj == NULL) /////////CHANGE
+        if (idobj == NULL)/////////CHANGE  
         {
             if (node->firstchild->nextsib != NULL)
             {
@@ -1135,7 +1171,7 @@ Type Exp(Node *node, int *plval)
             else
             {
                 Node *argsnode = NULL;
-                if (!STRcmp(node->firstchild->nextsib->nextsib->name, "Args"))
+                if (!strcmp_safe_(node->firstchild->nextsib->nextsib->name, "Args"))
                 {
                     argsnode = node->firstchild->nextsib->nextsib;
                 }
@@ -1155,12 +1191,12 @@ Type Exp(Node *node, int *plval)
             return copyTYPE(idobj->type);
         }
     }
-    else if (!STRcmp(node->firstchild->name, "INT"))
+    else if (!strcmp_safe_(node->firstchild->name, "INT"))
     {
         *plval = 0;
         return newTYPE(BASIC, INT_TYPE);
     }
-    else if (!STRcmp(node->firstchild->name, "FLOAT"))
+    else if (!strcmp_safe_(node->firstchild->name, "FLOAT"))
     {
         *plval = 0;
         return newTYPE(BASIC, FLOAT_TYPE);
@@ -1209,15 +1245,15 @@ int Args(Node *node, FieldList args, int fline)
 //             ;
 Type Specifier(Node *node)
 {
-    if (!STRcmp(node->firstchild->name, "TYPE"))
+    if (!strcmp_safe_(node->firstchild->name, "TYPE"))
     {
         Node *typenode = node->firstchild;
         char *type_str = typenode->val.id_val;
-        if (!STRcmp(type_str, "int"))
+        if (!strcmp_safe_(type_str, "int"))
         {
             return newTYPE(BASIC, INT_TYPE);
         }
-        else if (!STRcmp(type_str, "float"))
+        else if (!strcmp_safe_(type_str, "float"))
         {
             return newTYPE(BASIC, FLOAT_TYPE);
         }
@@ -1227,7 +1263,7 @@ Type Specifier(Node *node)
             return NULL;
         }
     }
-    else if (!STRcmp(node->firstchild->name, "StructSpecifier"))
+    else if (!strcmp_safe_(node->firstchild->name, "StructSpecifier"))
     {
         return StructSpecifier(node->firstchild);
     }
@@ -1248,7 +1284,7 @@ Type StructSpecifier(Node *node)
 {
 
     Node *tagnode = node->firstchild->nextsib;
-    if (!STRcmp(tagnode->name, "Tag"))
+    if (!strcmp_safe_(tagnode->name, "Tag"))
     {
         char *tagname = tagnode->firstchild->val.id_val;
         pobj tagobj = searchtab(table, tagname);
@@ -1277,13 +1313,13 @@ Type StructSpecifier(Node *node)
         {
             // 无名结构体
             table->unnamed_struct_num++;
-            tagname = (char *)malloc(sizeof(char) * 20);
-            snprintf(tagname, 20, "%d", table->unnamed_struct_num);
+            tagname = (char *)malloc(sizeof(char) * 100);
+            snprintf(tagname, 100, "%d", table->unnamed_struct_num);
         }
         FieldList field = newFieldList(tagname, NULL);
         rettype->u.structure = field;
         Node *defnode = tagnode->nextsib->nextsib;
-        if (!STRcmp(defnode->name, "DefList"))
+        if (!strcmp_safe_(defnode->name, "DefList"))
         {
             DefList(defnode, rettype->u.structure);
         }
@@ -1311,4 +1347,68 @@ int isStructType(pobj obj)
     if (obj == NULL)
         return 0;
     return obj->type->kind == STRUCTURE;
+}
+
+// Add this helper function to calculate field offsets in structs
+int getStructFieldOffset(Type structType, char* fieldName) {
+    if (!structType || structType->kind != STRUCTURE || !fieldName) {
+        printf("无效的结构体类型或字段名\n");
+        return -1;
+    }
+    
+    int offset = 0;
+    FieldList field = structType->u.structure;
+    
+    // 跳过结构体名字段（第一个字段通常存储结构体名）
+    if (field && field->type == NULL) {
+        field = field->tail;
+    }
+    
+    // 遍历字段计算偏移
+    while (field != NULL) {
+        if (!strcmp_safe_(field->name, fieldName)) {
+            printf("找到字段 %s，偏移量为 %d\n", fieldName, offset);
+            return offset;
+        }
+        
+        // 累加当前字段大小
+        offset += getTypeSize(field->type);
+        field = field->tail;
+    }
+    
+    printf("未找到字段 %s\n", fieldName);
+    return -1; // 未找到字段
+}
+
+// Helper function to calculate type sizes
+int getTypeSize(Type type) {
+    if (!type) return 0;
+    
+    switch (type->kind) {
+        case BASIC:
+            return 4; // int和float都是4字节
+            
+        case ARRAY:
+            return type->u.array.size * getTypeSize(type->u.array.elem);
+            
+        case STRUCTURE: {
+            int size = 0;
+            FieldList field = type->u.structure;
+            
+            // 跳过结构体名字段
+            if (field && field->type == NULL) {
+                field = field->tail;
+            }
+            
+            while (field != NULL) {
+                // 计算并累加每个字段的大小
+                size += getTypeSize(field->type);
+                field = field->tail;
+            }
+            return size;
+        }
+        
+        default:
+            return 4;
+    }
 }
