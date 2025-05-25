@@ -1,0 +1,22 @@
+#ifndef SIMULATER_H
+#define SIMULATER_H
+#include "common.h"
+#include "semantic.h"
+#include "inter.h"
+
+struct Register{
+	int state;//0表示空闲，1表示使用中
+	char *name;
+};
+
+struct VarDesc
+{
+	int reg_num;
+	pOperand op;
+	struct VarDesc* next;
+};
+
+
+void s_code_generate(FILE* fp);
+
+#endif

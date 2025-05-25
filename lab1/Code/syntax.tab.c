@@ -68,6 +68,7 @@
 /* First part of user prologue.  */
 #line 1 "./syntax.y"
 
+<<<<<<< Updated upstream:lab1/Code/syntax.tab.c
     #include "lex.yy.c" 
     int synerror_count=0;
     Node* root=NULL;
@@ -76,6 +77,8 @@
     extern void yyerror(const char* msg);
     #define YYERROR_VERBOSE 1
 
+=======
+>>>>>>> Stashed changes:lab3/Code/syntax.tab.c
 #line 80 "./syntax.tab.c"
 
 # ifndef YY_CAST
@@ -161,8 +164,13 @@ extern int yydebug;
 union YYSTYPE
 {
 #line 11 "./syntax.y"
+<<<<<<< Updated upstream:lab1/Code/syntax.tab.c
 
     struct Node* node;
+=======
+
+    struct Node* node;
+>>>>>>> Stashed changes:lab3/Code/syntax.tab.c
 
 #line 168 "./syntax.tab.c"
 

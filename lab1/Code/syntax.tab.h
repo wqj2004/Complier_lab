@@ -87,8 +87,11 @@ union YYSTYPE
 {
 #line 11 "./syntax.y"
 
+<<<<<<< Updated upstream:lab1/Code/syntax.tab.h
     struct Node* node;
 
+=======
+>>>>>>> Stashed changes:lab3/Code/syntax.tab.h
 #line 93 "./syntax.tab.h"
 
 };
