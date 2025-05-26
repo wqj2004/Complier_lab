@@ -295,7 +295,8 @@ void trans_one_line(pInstruction curr,FILE *fp){
 			fprintf(fp,"label%d:\n",curr->u.singleop.op->u.var_no);
 			break;
 		}      // LABEL x:
-		case FUNCTION_IR_:{
+		//case FUNCTION_IR_:{
+		case 3:{
 			fprintf(fp,"\n%s:\n",curr->u.singleop.op->u.name);
 			//清空寄存器
 			for(int i=8;i<26;i++)
@@ -523,7 +524,7 @@ void trans_one_line(pInstruction curr,FILE *fp){
 				}
 				tmp = find_pre_instr(tmp);
 			}
-			fprintf(fp, "  jal %s\n", curr->u.singleop.op->u.name);//调用函数
+			fprintf(fp, "  jal %s\n", curr->u.singleop.op->u.name);//调用函数 ////segmentation fault
 			//恢复栈
 			fprintf(fp, "  addi $sp, $sp, %d\n", (param_reg_num-4>0?param_reg_num-4:0) * 4);//将被调用的函数参数弹出
 			//如果在函数中则恢复原函数参数
