@@ -6,7 +6,59 @@
 #define hashsz 0x3fff
 #define max_st_depth 20
 
-pfunction_list function_list;
+pfunction_list function_list1;
+
+
+pfunction_list create_function_list() {
+    pfunction_list list = malloc(sizeof(function_list));
+    if (list != NULL) {
+        list->func_list = NULL;  // 初始化
+    }
+    return list;
+}
+
+
+void showTable()
+{
+    if(!debuger)return;
+    phash hashtab = table->hashtab;
+    pobj *objlist = hashtab->hashlist;
+    
+    printf("\n");
+    printf("Start Show Table\n");
+    for (int i = 0; i < hashsz; i++)
+    {
+        pobj obj = objlist[i];
+        if(obj == NULL)
+            continue;
+        else
+        {
+            printf("Hash index: %d\n", i);
+        }
+        while (obj != NULL)//{
+        {
+        //  {   if (strcmp(obj->name, "Data") == 0){
+        //     printf("%d\n",obj->type->kind);
+        //     fieldlist *field = obj->type->u.structure;
+        //     field = field->tail;
+        //     while(field != NULL){
+        //         printf("%s\n",field->name);
+        //         field = field->tail;
+        //     }
+             //printf("succ\n");
+            if(obj->type->kind == 2){
+                printf("Struct name: %s\n", obj->name);
+                FieldList field = obj->type->u.structure;
+                printf("Field name: %s\n", field->name);
+            }
+            printf("Name: %s, Type: %d,", obj->name, obj->type->kind);
+            obj = obj->hash_next;
+        }
+        printf("\n");
+    }
+    printf("\n");
+    return;
+}
 
 void insert_function_list(pfunction_list list, pobj obj)
 {
@@ -28,13 +80,13 @@ void insert_function_list(pfunction_list list, pobj obj)
 }
 
 int find_param_num(char* cur_name){
-    if (function_list == NULL)
+    if (function_list1 == NULL)
         return -1;
     int i = 0;
-    while (function_list->func_list[i] != NULL)
+    while (function_list1->func_list[i] != NULL)
     {
-        if (!strcmp_safe_(function_list->func_list[i]->name, cur_name))
-            return function_list->func_list[i]->type->u.function.argc;
+        if (!strcmp_safe_(function_list1->func_list[i]->name, cur_name))
+            return function_list1->func_list[i]->type->u.function.argc;
         i++;
     }
     return -1;
@@ -476,47 +528,6 @@ int objConflict(ptab table, pobj obj)
     return 0;
 }
 
-void showTable()
-{
-    //if(!debuger)return;
-    phash hashtab = table->hashtab;
-    pobj *objlist = hashtab->hashlist;
-    
-    printf("\n");
-    printf("Start Show Table\n");
-    for (int i = 0; i < hashsz; i++)
-    {
-        pobj obj = objlist[i];
-        if(obj == NULL)
-            continue;
-        else
-        {
-            printf("Hash index: %d\n", i);
-        }
-        while (obj != NULL)//{
-        {
-        //  {   if (strcmp(obj->name, "Data") == 0){
-        //     printf("%d\n",obj->type->kind);
-        //     fieldlist *field = obj->type->u.structure;
-        //     field = field->tail;
-        //     while(field != NULL){
-        //         printf("%s\n",field->name);
-        //         field = field->tail;
-        //     }
-             //printf("succ\n");
-            if(obj->type->kind == 2){
-                printf("Struct name: %s\n", obj->name);
-                FieldList field = obj->type->u.structure;
-                printf("Field name: %s\n", field->name);
-            }
-            printf("Name: %s, Type: %d,", obj->name, obj->type->kind);
-            obj = obj->hash_next;
-        }
-        printf("\n");
-    }
-    printf("\n");
-    return;
-}
 
 void DetectFunc_Undefined(){
     stack* st= table->st;
@@ -539,6 +550,7 @@ void DetectFunc_Undefined(){
 // Program     : ExtDefList
 void Program(Node *node)
 {
+    function_list1 = create_function_list();
     syscall_init_();
     if (node == NULL)
         return;
@@ -655,7 +667,7 @@ pobj FunDec(Node *node, Type rettype, Funstate isdef)
         funobj = newObj(node->firstchild->val.id_val, 0, funtype);
         // 添加一个objConflict
         insert_tabobj(table, funobj);
-        insert_function_list(function_list, funobj);
+        insert_function_list(function_list1, funobj);
         showTable();
         return funobj;
     }

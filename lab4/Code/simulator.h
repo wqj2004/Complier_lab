@@ -9,6 +9,9 @@ struct Register{
 	char *name;
 };
 
+struct Register _reg[32];
+
+
 struct VarDesc
 {
 	int reg_num;

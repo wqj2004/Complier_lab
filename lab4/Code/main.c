@@ -1,6 +1,6 @@
 #include "semantic.h"
 #include "inter.h"
-#include "simulater.h"
+#include "simulator.h"
 extern int yyparse();
 extern FILE *yyin;
 extern void yyrestart(FILE *input_file);
@@ -42,6 +42,8 @@ int main(int argc, char **argv)
         } else {
             fprintf(stderr, "Error opening output file.\n");
         }
+        FILE *out2 = fopen(argv[3], "w");
+        s_code_generate(out2);
     }
 
     return 0;

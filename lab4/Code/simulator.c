@@ -3,9 +3,7 @@
 extern CodeList code_list;
 extern struct Register _reg[32];
 
-
 int in_func=0;//表示当前是否在函数中
-int param_reg_num=4;
 char *cur_fun_name;
 
 int last_changed_reg=0;
@@ -131,7 +129,11 @@ int ensure(pOperand op){//保证op在寄存器中，返回寄存器编号
 	struct VarDesc* p = var_head;
 	while(p!=NULL)
 	{
-		if(p->op->kind != CONSTANT && strcmp(p->op->u.name,op->u.name)==0)
+		if(p->op->kind == op ->kind && op->kind == 2 && p->op->u.var_no == op->u.var_no) //如果是临时变量
+		{
+			return p->reg_num;
+		}
+		else if(p->op->kind == VARIABLE && op->kind == VARIABLE && strcmp(p->op->u.name,op->u.name)==0)
 			return p->reg_num;
 		p=p->next;
 	}
@@ -441,7 +443,7 @@ void trans_one_line(pInstruction curr,FILE *fp){
 			break;
 		}    // x := *y
 		case GOTO:{
-			fprintf(fp, "  j %s\n",curr->u.singleop.op->u.name);
+			fprintf(fp, "  j label%d\n",curr->u.singleop.op->u.var_no);//TODO label%d 应该对吧，再检查一下
 			break;
 		}       // GOTO x
 		case IF_GOTO:{
@@ -595,6 +597,7 @@ void trans_one_line(pInstruction curr,FILE *fp){
 void trans(FILE* fp){
 	pInstruction curr = code_list.head;
     while (curr != NULL) {
+	printf("translating %d\n",curr->kind);
 	trans_one_line(curr,fp);
 	curr = curr->next;
 	}
@@ -604,6 +607,6 @@ void trans(FILE* fp){
 void s_code_generate(FILE* fp){
     init_reg();
     init_data_text(fp);
-    init_var();
+    init_var_list();
 	trans(fp);
 }

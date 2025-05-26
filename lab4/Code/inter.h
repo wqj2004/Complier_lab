@@ -72,6 +72,8 @@ typedef struct CodeList_ {
     pInstruction tail;
 } CodeList;
 
+extern CodeList code_list;
+
 // Initialize intermediate code generator
 void initInterCodeGen();
 

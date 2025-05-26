@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 // Global variables
-static CodeList code_list = {NULL, NULL};
+CodeList code_list = {NULL, NULL};
 static int temp_var_count = 0;
 static int label_count = 0;
 static int var_count = 0;
