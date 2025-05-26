@@ -1,7 +1,8 @@
 #include "simulator.h"
 
 extern CodeList code_list;
-extern struct Register _reg[32];
+//extern struct Register _reg[32];
+struct Register _reg[32];
 
 int in_func=0;//表示当前是否在函数中
 char *cur_fun_name;

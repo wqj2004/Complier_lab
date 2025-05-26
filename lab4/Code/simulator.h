@@ -1,5 +1,7 @@
-#ifndef SIMULATER_H
-#define SIMULATER_H
+
+#ifndef SIMULATER_H__
+#define SIMULATER_H__
+
 #include "common.h"
 #include "semantic.h"
 #include "inter.h"
@@ -9,7 +11,7 @@ struct Register{
 	char *name;
 };
 
-struct Register _reg[32];
+// struct Register _reg[32];
 
 
 struct VarDesc

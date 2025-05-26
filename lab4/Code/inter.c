@@ -300,12 +300,10 @@ void translateDefList(Node* node) {
 
     while (def) {
         Node* decList = def->firstchild->nextsib;
-        if (decList) {
+        while (decList) {
             Node* dec = decList->firstchild;
-            while (dec) {
+            if (dec) {
                 Node* varDec = dec->firstchild;
-                //printf("detected vardec %s <- %s <- %s\n", varDec->name, dec->name, decList->name);
-                
                 Type varType = NULL;
                 Node* idNode = find_node_recursive(varDec, "ID");
                 if (idNode) {
@@ -327,49 +325,7 @@ void translateDefList(Node* node) {
                         }
                     }
                 }
-                
-                // // Check if this is an array declaration
-                // if (find_node(varDec, "LB")) {
-                //     // Handle array allocation (DEC instruction)
-                //     Node* idNode = find_node(varDec, "ID");
-                    
-                //     // Get array dimensions and calculate total size
-                //     int totalSize = calculateArraySize(varDec);
-                    
-                //     if (idNode && totalSize > 0) {
-                //         pInstruction decInstr = newInstruction(DEC);
-                //         decInstr->u.dec.op = newVariable(idNode->val.id_val);
-                //         decInstr->u.dec.size = totalSize;
-                //         appendInstruction(decInstr);
-                //     }
-                // }
-                // // Check if this is a structure type that needs memory allocation
-                // else if (def->firstchild && !strcmp_safe_(def->firstchild->name, "Specifier")) {
-                //     Node* specifier = def->firstchild;
-                //     Node* structSpecifier = find_node(specifier, "StructSpecifier");
-                    
-                //     if (structSpecifier) {
-                //         // It's a structure type, allocate memory for it
-                //         Node* idNode = find_node(varDec, "ID");
-                //         if (idNode) {
-                //             // Find structure size from symbol table
-                //             char* varName = idNode->val.id_val;
-                //             pobj varObj = searchtab(table, varName);
-                            
-                //             if (varObj && varObj->type->kind == STRUCTURE) {
-                //                 int structSize = getTypeSize(varObj->type);
                                 
-                //                 if (structSize > 0) {
-                //                     pInstruction decInstr = newInstruction(DEC);
-                //                     decInstr->u.dec.op = newVariable(varName);
-                //                     decInstr->u.dec.size = structSize;
-                //                     appendInstruction(decInstr);
-                //                 }
-                //             }
-                //         }
-                //     }
-                // }
-                
                 // Check if there's an initializer
                 if (dec->firstchild->nextsib && !strcmp_safe_(dec->firstchild->nextsib->name, "ASSIGNOP")) {
                     Node* exp = dec->firstchild->nextsib->nextsib;
@@ -393,7 +349,7 @@ void translateDefList(Node* node) {
                 
                 // Move to next declaration
                 if (dec->nextsib && !strcmp_safe_(dec->nextsib->name, "COMMA")) {
-                    dec = dec->nextsib->nextsib;
+                    decList = dec->nextsib->nextsib;
                 } else {
                     break;
                 }

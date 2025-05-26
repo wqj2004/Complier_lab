@@ -1,41 +1,62 @@
-FUNCTION fact :
-PARAM n
-t0 := n
-t1 := #1
-IF t0 == t1 GOTO label0
-GOTO label1
-LABEL label0 :
-t2 := n
-RETURN t2
-GOTO label2
-LABEL label1 :
-t4 := n
-t7 := n
-t8 := #1
-t6 := t7 - t8
-ARG t6
-t5 := CALL fact
-t3 := t4 * t5
-RETURN t3
-LABEL label2 :
-FUNCTION main :
-READ t9
-m := t9
-t10 := m
-t11 := #1
-IF t10 > t11 GOTO label3
-GOTO label4
-LABEL label3 :
-t13 := m
-ARG t13
-t12 := CALL fact
-result := t12
-GOTO label5
-LABEL label4 :
-t14 := #1
-result := t14
-LABEL label5 :
-t15 := result
-WRITE t15
-t16 := #0
-RETURN t16
+.data
+_prompt: .asciiz "Enter an integer:"
+_ret: .asciiz "\n"
+.globl main
+.text
+read:
+  li $v0, 4
+  la $a0, _prompt
+  syscall
+  li $v0, 5
+  syscall
+  jr $ra
+
+write:
+  li $v0, 1
+  syscall
+  li $v0, 4
+  la $a0, _ret
+  syscall
+  move $v0, $0
+  jr $ra
+
+main:
+  li $t0, 0
+  li $t1, 1
+  li $t2, 0
+  addi $sp, $sp, -4
+  sw $ra, 0($sp)
+  jal read
+  lw $ra, 0($sp)
+  addi $sp, $sp, 4
+  move $t3, $v0
+  move $t4, $t3
+label0:
+  move $t5, $t2
+  move $t6, $t4
+  blt $t5, $t6, label1
+  j label2
+label1:
+  move $t7, $t0
+  move $s0, $t1
+  add $s1, $t7, $s0
+  move $s2, $t1
+  move $a0, $s2
+  addi $sp, $sp, -4
+  sw $ra, 0($sp)
+  jal write
+  lw $ra, 0($sp)
+  addi $sp, $sp, 4
+  move $s3, $t1
+  move $t0, $s3
+  move $s4, $s1
+  move $t1, $s4
+  move $s5, $t2
+  li $s6, 1
+  add $s7, $s5, $s6
+  move $t2, $s7
+  j label0
+label2:
+  li $t8, 0
+  move $v0, $t8
+  jr $ra
