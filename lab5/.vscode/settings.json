@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "dataflow_analysis.h": "c",
+        "ir.h": "c"
+    }
+}
