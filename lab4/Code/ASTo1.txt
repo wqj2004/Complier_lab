@@ -1,205 +1,84 @@
-Program (1)
-  ExtDefList (1)
-    ExtDef (1)
-      Specifier (1)
+Program (2)
+  ExtDefList (2)
+    ExtDef (2)
+      Specifier (2)
         TYPE: int
-      FunDec (1)
-        ID: fact
+      FunDec (2)
+        ID: main
         LP
-        VarList (1)
-          ParamDec (1)
-            Specifier (1)
-              TYPE: int
-            VarDec (1)
-              ID: m
         RP
-      CompSt (1)
+      CompSt (2)
         LC
-        DefList (2)
-          Def (2)
-            Specifier (2)
+        DefList (3)
+          Def (3)
+            Specifier (3)
               TYPE: int
-            DecList (2)
-              Dec (2)
-                VarDec (2)
-                  ID: result
-                ASSIGNOP
-                Exp (2)
-                  INT: 1
-            SEMI
-          DefList (3)
-            Def (3)
-              Specifier (3)
-                TYPE: int
-              DecList (3)
-                Dec (3)
+            DecList (3)
+              Dec (3)
+                VarDec (3)
                   VarDec (3)
-                    ID: j
+                    ID: x
+                  LB
+                  INT: 5
+                  RB
+            SEMI
+          DefList (4)
+            Def (4)
+              Specifier (4)
+                TYPE: int
+              DecList (4)
+                Dec (4)
+                  VarDec (4)
+                    ID: i
                   ASSIGNOP
-                  Exp (3)
-                    INT: 1
+                  Exp (4)
+                    INT: 0
+                COMMA
+                DecList (4)
+                  Dec (4)
+                    VarDec (4)
+                      ID: N
+                    ASSIGNOP
+                    Exp (4)
+                      INT: 5
               SEMI
-        StmtList (4)
-          Stmt (4)
+        StmtList (5)
+          Stmt (5)
             WHILE
             LP
-            Exp (4)
-              Exp (4)
-                ID: j
+            Exp (5)
+              Exp (5)
+                ID: i
               RELOP
-              Exp (4)
-                ID: m
+              Exp (5)
+                ID: N
             RP
-            Stmt (4)
-              CompSt (4)
+            Stmt (5)
+              CompSt (5)
                 LC
-                StmtList (5)
-                  Stmt (5)
-                    Exp (5)
-                      Exp (5)
-                        ID: result
-                      ASSIGNOP
-                      Exp (5)
-                        Exp (5)
-                          ID: result
-                        STAR
-                        Exp (5)
-                          ID: j
-                    SEMI
-                  StmtList (6)
-                    Stmt (6)
+                StmtList (6)
+                  Stmt (6)
+                    Exp (6)
                       Exp (6)
                         Exp (6)
-                          ID: j
-                        ASSIGNOP
+                          ID: x
+                        LB
                         Exp (6)
-                          Exp (6)
-                            ID: j
-                          PLUS
-                          Exp (6)
-                            INT: 1
-                      SEMI
+                          ID: i
+                        RB
+                      ASSIGNOP
+                      Exp (6)
+                        Exp (6)
+                          ID: i
+                        PLUS
+                        Exp (6)
+                          INT: 2
+                    SEMI
                 RC
           StmtList (8)
             Stmt (8)
               RETURN
               Exp (8)
-                ID: result
+                INT: 0
               SEMI
         RC
-    ExtDefList (10)
-      ExtDef (10)
-        Specifier (10)
-          TYPE: int
-        FunDec (10)
-          ID: main
-          LP
-          RP
-        CompSt (10)
-          LC
-          DefList (11)
-            Def (11)
-              Specifier (11)
-                TYPE: int
-              DecList (11)
-                Dec (11)
-                  VarDec (11)
-                    VarDec (11)
-                      ID: x
-                    LB
-                    INT: 5
-                    RB
-              SEMI
-            DefList (12)
-              Def (12)
-                Specifier (12)
-                  TYPE: int
-                DecList (12)
-                  Dec (12)
-                    VarDec (12)
-                      ID: i
-                    ASSIGNOP
-                    Exp (12)
-                      INT: 0
-                  COMMA
-                  DecList (12)
-                    Dec (12)
-                      VarDec (12)
-                        ID: N
-                      ASSIGNOP
-                      Exp (12)
-                        INT: 5
-                SEMI
-          StmtList (13)
-            Stmt (13)
-              WHILE
-              LP
-              Exp (13)
-                Exp (13)
-                  ID: i
-                RELOP
-                Exp (13)
-                  ID: N
-              RP
-              Stmt (13)
-                CompSt (13)
-                  LC
-                  StmtList (14)
-                    Stmt (14)
-                      Exp (14)
-                        Exp (14)
-                          Exp (14)
-                            ID: x
-                          LB
-                          Exp (14)
-                            ID: i
-                          RB
-                        ASSIGNOP
-                        Exp (14)
-                          Exp (14)
-                            ID: i
-                          PLUS
-                          Exp (14)
-                            INT: 2
-                      SEMI
-                    StmtList (15)
-                      Stmt (15)
-                        Exp (15)
-                          ID: write
-                          LP
-                          Args (15)
-                            Exp (15)
-                              ID: fact
-                              LP
-                              Args (15)
-                                Exp (15)
-                                  Exp (15)
-                                    ID: x
-                                  LB
-                                  Exp (15)
-                                    ID: i
-                                  RB
-                              RP
-                          RP
-                        SEMI
-                      StmtList (16)
-                        Stmt (16)
-                          Exp (16)
-                            Exp (16)
-                              ID: i
-                            ASSIGNOP
-                            Exp (16)
-                              Exp (16)
-                                ID: i
-                              PLUS
-                              Exp (16)
-                                INT: 1
-                          SEMI
-                  RC
-            StmtList (18)
-              Stmt (18)
-                RETURN
-                Exp (18)
-                  INT: 0
-                SEMI
-          RC

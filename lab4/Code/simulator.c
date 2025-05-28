@@ -278,8 +278,6 @@ int ensure(pOperand op,FILE *fp){//保证op在寄存器中，返回寄存器编�
 
 }
 
-
-
 void init_reg(){
     for(int i=0;i<32;++i){
         _reg[i].state=0;
@@ -330,7 +328,7 @@ void init_data_text(FILE* fp){
     while (curr != NULL) {
     	if(curr->kind == DEC)
     	{
-    		fprintf(fp, "%s: .word %d\n",curr->u.dec.op->u.name, curr->u.dec.size);
+    		fprintf(fp, "%s: .space %d\n",curr->u.dec.op->u.name, curr->u.dec.size);
     	} 			
         curr = curr->next;
     }
@@ -439,6 +437,8 @@ void trans_one_line(pInstruction curr,FILE *fp){
 			var_cur=NULL;
 			memory_var_head=NULL;
 			memory_var_cur=NULL;
+			spill_mem_head = NULL;
+			spill_mem_cur = NULL;
 
 			//加载参数
 			if(strcmp(curr->u.singleop.op->u.name,"main")==0)//main函数
