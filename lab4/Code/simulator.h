@@ -11,6 +11,8 @@ struct Register{
 	char *name;
 };
 
+
+
 // struct Register _reg[32];
 
 
@@ -20,6 +22,13 @@ struct VarDesc
 	pOperand op;
 	struct VarDesc* next;
 };
+
+typedef struct MemVarDesc {
+    pOperand op;
+    char* global_label;     // 全局标签名
+    struct MemVarDesc* next;
+} MemVarDesc;//生成溢出到内存的变量
+
 
 
 void s_code_generate(FILE* fp);
