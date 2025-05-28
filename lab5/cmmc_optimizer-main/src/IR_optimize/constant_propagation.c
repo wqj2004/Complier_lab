@@ -24,6 +24,7 @@ static CPValue meetValue(CPValue v1, CPValue v2)
     }
     if (v1.kind == CONST || v2.kind == CONST)
         return get_CONST(v1.kind == CONST ? v1.const_val : v2.const_val);
+    return get_NAC();
 }
 
 static CPValue calculateValue(IR_OP_TYPE IR_op_type, CPValue v1, CPValue v2)
@@ -132,7 +133,7 @@ ConstantPropagation_isForward(ConstantPropagation *t)
 {
     // TODO: return isForward?;
     // TODO();
-    return true
+    return true;
 }
 
 static Map_IR_var_CPValue *
