@@ -121,7 +121,7 @@ static void worklistDoSolveBackward(DataflowAnalysis *t, IR_function *func)
     while (worklist.tail != NULL)
     {
         // 从worklist的尾部中取出 blk
-        IR_block *blk = worklist.head->val;
+        IR_block *blk = worklist.tail->val;
         VCALL(worklist, pop_front);
         // 获取 IN[blk] 与 OUT[blk]
         Fact *in_fact = VCALL(*t, getInFact, blk), *out_fact = VCALL(*t, getOutFact, blk);
