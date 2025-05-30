@@ -74,11 +74,25 @@ Program (2)
                         Exp (6)
                           INT: 2
                     SEMI
+                  StmtList (7)
+                    Stmt (7)
+                      Exp (7)
+                        Exp (7)
+                          ID: i
+                        ASSIGNOP
+                        Exp (7)
+                          Exp (7)
+                            ID: x
+                          LB
+                          Exp (7)
+                            ID: i
+                          RB
+                      SEMI
                 RC
-          StmtList (8)
-            Stmt (8)
+          StmtList (9)
+            Stmt (9)
               RETURN
-              Exp (8)
+              Exp (9)
                 INT: 0
               SEMI
         RC

@@ -16,7 +16,13 @@ t7 := i
 t8 := #2
 t6 := t7 + t8
 *t5 := t6
+t10 := x
+t11 := i
+t12 := t11 * #4
+t13 := t10 + t12
+t9 := *t13
+i := t9
 GOTO label0
 LABEL label2 :
-t9 := #0
-RETURN t9
+t14 := #0
+RETURN t14
