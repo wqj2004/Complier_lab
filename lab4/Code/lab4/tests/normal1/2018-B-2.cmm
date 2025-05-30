@@ -12,7 +12,7 @@ int gcd1(int a, int b) {
 }
 int gcd2(int x, int y) {
     int remainder = 0;
-    if (x > y) {cc
+    if (x > y) {
         remainder = x - x / y * y;
         if (remainder == 0)
             return y;

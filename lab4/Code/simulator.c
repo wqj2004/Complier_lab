@@ -646,7 +646,7 @@ void trans_one_line(pInstruction curr, FILE *fp)
 			{
 				fprintf(fp, "  li %s, %d\n", _reg[op1_reg_num].name, op1->u.value);
 			}
-			else
+			else if (op2->kind == CONSTANT)
 			{
 				fprintf(fp, "  li %s, %d\n", _reg[op2_reg_num].name, op2->u.value);
 			}

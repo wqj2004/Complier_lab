@@ -1,0 +1,345 @@
+Program (1)
+  ExtDefList (1)
+    ExtDef (1)
+      Specifier (1)
+        TYPE: int
+      FunDec (1)
+        ID: squaRever
+        LP
+        VarList (1)
+          ParamDec (1)
+            Specifier (1)
+              TYPE: int
+            VarDec (1)
+              ID: num
+        RP
+      CompSt (1)
+        LC
+        DefList (2)
+          Def (2)
+            Specifier (2)
+              TYPE: int
+            DecList (2)
+              Dec (2)
+                VarDec (2)
+                  ID: flag
+                ASSIGNOP
+                Exp (2)
+                  INT: 0
+            SEMI
+          DefList (3)
+            Def (3)
+              Specifier (3)
+                TYPE: int
+              DecList (3)
+                Dec (3)
+                  VarDec (3)
+                    VarDec (3)
+                      ID: array
+                    LB
+                    INT: 3
+                    RB
+              SEMI
+            DefList (4)
+              Def (4)
+                Specifier (4)
+                  TYPE: int
+                DecList (4)
+                  Dec (4)
+                    VarDec (4)
+                      ID: j
+                    ASSIGNOP
+                    Exp (4)
+                      INT: 0
+                SEMI
+        StmtList (5)
+          Stmt (5)
+            Exp (5)
+              Exp (5)
+                Exp (5)
+                  ID: array
+                LB
+                Exp (5)
+                  INT: 0
+                RB
+              ASSIGNOP
+              Exp (5)
+                Exp (5)
+                  ID: num
+                DIV
+                Exp (5)
+                  INT: 100
+            SEMI
+          StmtList (6)
+            Stmt (6)
+              Exp (6)
+                Exp (6)
+                  Exp (6)
+                    ID: array
+                  LB
+                  Exp (6)
+                    INT: 1
+                  RB
+                ASSIGNOP
+                Exp (6)
+                  Exp (6)
+                    Exp (6)
+                      ID: num
+                    DIV
+                    Exp (6)
+                      INT: 10
+                  MINUS
+                  Exp (6)
+                    Exp (6)
+                      INT: 10
+                    STAR
+                    Exp (6)
+                      Exp (6)
+                        ID: array
+                      LB
+                      Exp (6)
+                        INT: 0
+                      RB
+              SEMI
+            StmtList (7)
+              Stmt (7)
+                Exp (7)
+                  Exp (7)
+                    Exp (7)
+                      ID: array
+                    LB
+                    Exp (7)
+                      INT: 2
+                    RB
+                  ASSIGNOP
+                  Exp (7)
+                    Exp (7)
+                      Exp (7)
+                        ID: num
+                      MINUS
+                      Exp (7)
+                        Exp (7)
+                          INT: 100
+                        STAR
+                        Exp (7)
+                          Exp (7)
+                            ID: array
+                          LB
+                          Exp (7)
+                            INT: 0
+                          RB
+                    MINUS
+                    Exp (7)
+                      Exp (7)
+                        INT: 10
+                      STAR
+                      Exp (7)
+                        Exp (7)
+                          ID: array
+                        LB
+                        Exp (7)
+                          INT: 1
+                        RB
+                SEMI
+              StmtList (8)
+                Stmt (8)
+                  IF
+                  LP
+                  Exp (8)
+                    Exp (8)
+                      Exp (8)
+                        ID: array
+                      LB
+                      Exp (8)
+                        INT: 0
+                      RB
+                    RELOP
+                    Exp (8)
+                      Exp (8)
+                        ID: array
+                      LB
+                      Exp (8)
+                        INT: 2
+                      RB
+                  RP
+                  Stmt (8)
+                    CompSt (8)
+                      LC
+                      StmtList (9)
+                        Stmt (9)
+                          Exp (9)
+                            Exp (9)
+                              ID: flag
+                            ASSIGNOP
+                            Exp (9)
+                              INT: 0
+                          SEMI
+                      RC
+                  ELSE
+                  Stmt (10)
+                    CompSt (10)
+                      LC
+                      StmtList (11)
+                        Stmt (11)
+                          WHILE
+                          LP
+                          Exp (11)
+                            Exp (11)
+                              ID: j
+                            RELOP
+                            Exp (11)
+                              INT: 12
+                          RP
+                          Stmt (11)
+                            CompSt (11)
+                              LC
+                              StmtList (12)
+                                Stmt (12)
+                                  IF
+                                  LP
+                                  Exp (12)
+                                    Exp (12)
+                                      LP
+                                      Exp (12)
+                                        Exp (12)
+                                          Exp (12)
+                                            ID: j
+                                          STAR
+                                          Exp (12)
+                                            ID: j
+                                        MINUS
+                                        Exp (12)
+                                          ID: num
+                                      RP
+                                    RELOP
+                                    Exp (12)
+                                      INT: 0
+                                  RP
+                                  Stmt (12)
+                                    Exp (12)
+                                      Exp (12)
+                                        ID: flag
+                                      ASSIGNOP
+                                      Exp (12)
+                                        INT: 1
+                                    SEMI
+                                StmtList (13)
+                                  Stmt (13)
+                                    Exp (13)
+                                      Exp (13)
+                                        ID: j
+                                      ASSIGNOP
+                                      Exp (13)
+                                        Exp (13)
+                                          ID: j
+                                        PLUS
+                                        Exp (13)
+                                          INT: 1
+                                    SEMI
+                              RC
+                      RC
+                StmtList (16)
+                  Stmt (16)
+                    IF
+                    LP
+                    Exp (16)
+                      Exp (16)
+                        ID: flag
+                      RELOP
+                      Exp (16)
+                        INT: 1
+                    RP
+                    Stmt (17)
+                      RETURN
+                      Exp (17)
+                        INT: 1
+                      SEMI
+                    ELSE
+                    Stmt (19)
+                      RETURN
+                      Exp (19)
+                        INT: 0
+                      SEMI
+        RC
+    ExtDefList (21)
+      ExtDef (21)
+        Specifier (21)
+          TYPE: int
+        FunDec (21)
+          ID: main
+          LP
+          RP
+        CompSt (21)
+          LC
+          DefList (22)
+            Def (22)
+              Specifier (22)
+                TYPE: int
+              DecList (22)
+                Dec (22)
+                  VarDec (22)
+                    ID: i
+                  ASSIGNOP
+                  Exp (22)
+                    INT: 100
+              SEMI
+          StmtList (23)
+            Stmt (23)
+              WHILE
+              LP
+              Exp (23)
+                Exp (23)
+                  ID: i
+                RELOP
+                Exp (23)
+                  INT: 150
+              RP
+              Stmt (23)
+                CompSt (23)
+                  LC
+                  StmtList (24)
+                    Stmt (24)
+                      IF
+                      LP
+                      Exp (24)
+                        Exp (24)
+                          ID: squaRever
+                          LP
+                          Args (24)
+                            Exp (24)
+                              ID: i
+                          RP
+                        RELOP
+                        Exp (24)
+                          INT: 1
+                      RP
+                      Stmt (24)
+                        Exp (24)
+                          ID: write
+                          LP
+                          Args (24)
+                            Exp (24)
+                              ID: i
+                          RP
+                        SEMI
+                    StmtList (25)
+                      Stmt (25)
+                        Exp (25)
+                          Exp (25)
+                            ID: i
+                          ASSIGNOP
+                          Exp (25)
+                            Exp (25)
+                              ID: i
+                            PLUS
+                            Exp (25)
+                              INT: 1
+                        SEMI
+                  RC
+            StmtList (27)
+              Stmt (27)
+                RETURN
+                Exp (27)
+                  INT: 0
+                SEMI
+          RC
