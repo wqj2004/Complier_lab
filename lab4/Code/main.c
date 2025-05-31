@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 
     tmpout = fopen("finalout.s", "w");
 
-    char *out2_name = argv[3];
+    char *out2_name = argv[2];
 
     if (lexerror_count == 0 && synerror_count == 0)
     {
@@ -39,18 +39,18 @@ int main(int argc, char **argv)
 
         initInterCodeGen();
         translateProgram(root);
-        FILE *out = fopen(argv[2], "w");
-        // FILE *out = stdout;
-        if (out)
-        {
-            outputInterCode(out);
-            fclose(out);
-        }
-        else
-        {
-            fprintf(stderr, "Error opening output file.\n");
-        }
-        FILE *out2 = fopen(argv[3], "w");
+        // FILE *out = fopen(argv[2], "w");
+        // // FILE *out = stdout;
+        // if (out)
+        // {
+        //     outputInterCode(out);
+        //     fclose(out);
+        // }
+        // else
+        // {
+        //     fprintf(stderr, "Error opening output file.\n");
+        // }
+        FILE *out2 = fopen(argv[2], "w");
         s_code_generate(out2);
         fclose(out2);
     }

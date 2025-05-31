@@ -264,10 +264,14 @@ int allocate(pOperand op, FILE *fp)
 	{
 		if (p->op->kind == TEMPORARY && p->reg_num != last_changed_reg) // 遍历变量描述符，临时变量且不是最后改变的直接释放
 		{
-			last_changed_reg = p->reg_num;
+			// 生成溢出代码：将寄存器内容存储到内存
+			spill_to_memory(fp, p);
+
+			int spilled_reg = p->reg_num;
+			last_changed_reg = spilled_reg;
 			del_var_desc(p);
-			add_var_desc(last_changed_reg, op, fp);
-			return last_changed_reg;
+			add_var_desc(spilled_reg, op, fp);
+			return spilled_reg;
 		}
 		p = p->next;
 	}

@@ -1,7 +1,9 @@
-对数组的访问，应该访问数组变量的地址，如
-if (op->kind == 数组变量) {
-        // 检查是否是数组变量
-        int reg = allocate(op, fp);
-        fprintf(fp, "  la %s, %s\n", _reg[reg].name, 数组变量的地址名？);38页
-        return reg;
-    }
+2018-B-2.cmm
+2020-A_2.cmm segmentation fault
+2020-B_2.cmm
+2020-B_3.cmm segmentation fault
+2020-C_1.cmm
+2020-C_2.cmm segmentation fault
+2020-D_1.cmm
+normal3 test [A-4.cmm]
+normal3 test [A-5.cmm] mismatch or TLE
