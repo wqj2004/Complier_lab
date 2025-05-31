@@ -1,3 +1,8 @@
+
+
+#ifndef SEMANTIC_H
+#define SEMANTIC_H
+
 #include "common.h"
 
 typedef struct Type_ *Type;
@@ -6,6 +11,7 @@ typedef struct Object *pobj;
 typedef struct ObjTable *ptab;
 typedef struct HashTable *phash;
 typedef struct Stack *pstack;
+typedef struct Function_list *pfunction_list;
 
 typedef enum
 {
@@ -109,6 +115,11 @@ typedef struct Stack
     int cur_stack_depth;
 } stack;
 
+typedef struct Function_list
+{
+    pobj *func_list;
+} function_list;
+
 // 符号表的定义
 typedef struct ObjTable
 {
@@ -123,6 +134,9 @@ static inline void semanticError(ErrorType type, int line, char *msg)
 {
     printf("Error type %d at Line %d: %s\n", type, line, msg);
 }
+// Function
+void insert_function_list(pfunction_list list, pobj obj);
+int find_param_num(char *cur_name);
 
 // TYPE
 Type newTYPE(TypeKind kind, ...);
@@ -184,3 +198,14 @@ Type StructSpecifier(Node *node);
 
 // utils
 int isStructType(pobj obj);
+Node *find_node(Node *start, char *name);
+Node *find_node_recursive(Node *start, char *name);
+int strcmp_safe_(const char *_Str1, const char *_Str2);
+int getStructFieldOffset(Type structType, char *fieldName);
+int getTypeSize(Type type);
+
+void syscall_init_();
+
+extern ptab table;
+
+#endif
