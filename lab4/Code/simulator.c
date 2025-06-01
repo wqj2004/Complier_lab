@@ -21,35 +21,6 @@ struct VarDesc *memory_var_cur;
 static MemVarDesc *spill_mem_head = NULL;
 static MemVarDesc *spill_mem_cur = NULL;
 
-// typedef struct arr_list *parr_list;
-// typedef struct arr_list
-// {
-// 	char *name;
-// 	parr_list next;
-// } arr_list;
-// arr_list *arr_head = NULL; // 用于存储数组名的链表
-
-// void insert_arr_list(char *name)
-// {
-// 	arr_list *new_node = (arr_list *)malloc(sizeof(arr_list));
-// 	new_node->name = copystr(name);
-// 	new_node->next = NULL;
-
-// 	if (arr_head == NULL)
-// 	{
-// 		arr_head = new_node;
-// 	}
-// 	else
-// 	{
-// 		arr_list *current = arr_head;
-// 		while (current->next != NULL)
-// 		{
-// 			current = current->next;
-// 		}
-// 		current->next = new_node;
-// 	}
-// }
-
 // 操作数比较函数
 int operand_equal(pOperand op1, pOperand op2)
 {
@@ -336,7 +307,7 @@ int ensure(pOperand op, FILE *fp)
 		p = p->next;
 	}
 
-	int tmp = load_from_memory(tmpout, op);
+	int tmp = load_from_memory(fp, op);
 	if (tmp != 0)
 	{
 		// 如果从内存加载成功，返回寄存器编号
@@ -628,6 +599,14 @@ void trans_one_line(pInstruction curr, FILE *fp)
 		{ // 如果有第二种情况会多用一个寄存器，但是不会出错
 			int op1_reg_num = ensure(op1, fp);
 			int op2_reg_num = ensure(op2, fp);
+			if(op1->kind == CONSTANT)
+			{
+				fprintf(fp, "  li %s, %d\n", _reg[op1_reg_num].name, op1->u.value);
+			}
+			else if (op2->kind == CONSTANT)
+			{
+				fprintf(fp, "  li %s, %d\n", _reg[op2_reg_num].name, op2->u.value);
+			}
 			fprintf(fp, "  sub %s, %s, %s\n", _reg[result_reg_num].name, _reg[op1_reg_num].name, _reg[op2_reg_num].name);
 		}
 		break;
@@ -666,6 +645,13 @@ void trans_one_line(pInstruction curr, FILE *fp)
 		int result_reg_num = ensure(result, fp);
 		int op1_reg_num = ensure(op1, fp);
 		int op2_reg_num = ensure(op2, fp);
+		if(op1->kind == CONSTANT){
+			fprintf(fp, "  li %s, %d\n", _reg[op1_reg_num].name, op1->u.value);
+		}
+		if (op2->kind == CONSTANT)
+		{
+			fprintf(fp, "  li %s, %d\n", _reg[op2_reg_num].name, op2->u.value);
+		}
 		fprintf(fp, "  div %s, %s\n", _reg[op1_reg_num].name, _reg[op2_reg_num].name);
 		fprintf(fp, "  mflo %s\n", _reg[result_reg_num].name);
 		break;
@@ -682,6 +668,10 @@ void trans_one_line(pInstruction curr, FILE *fp)
 	{
 		int result_reg_num = ensure(curr->u.assign.result, fp);
 		int op1_reg_num = ensure(curr->u.assign.op1, fp);
+		if(curr->u.assign.op1->kind == CONSTANT)
+		{
+			fprintf(fp, "  li %s, %d\n", _reg[op1_reg_num].name, curr->u.assign.op1->u.value);
+		}
 		fprintf(fp, "  sw %s, 0(%s)\n", _reg[op1_reg_num].name, _reg[result_reg_num].name);
 		break;
 	} // *x := y
@@ -701,6 +691,14 @@ void trans_one_line(pInstruction curr, FILE *fp)
 	{
 		int x_num = ensure(curr->u.if_goto.x, fp);
 		int y_num = ensure(curr->u.if_goto.y, fp);
+		if (curr->u.if_goto.x->kind == CONSTANT)
+		{
+			fprintf(fp, "  li %s, %d\n", _reg[x_num].name, curr->u.if_goto.x->u.value);
+		}
+		if (curr->u.if_goto.y->kind == CONSTANT)
+		{
+			fprintf(fp, "  li %s, %d\n", _reg[y_num].name, curr->u.if_goto.y->u.value);
+		}
 		fprintf(fp, "  ");
 		print_relop(curr->u.if_goto.relop, fp);
 		fprintf(fp, "%s, %s, label%d\n", _reg[x_num].name, _reg[y_num].name, curr->u.if_goto.z->u.var_no); // TODO label%d 应该对吧，再检查一下

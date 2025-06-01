@@ -1,9 +1,7 @@
-2018-B-2.cmm
-2020-A_2.cmm segmentation fault
-2020-B_2.cmm
-2020-B_3.cmm segmentation fault
-2020-C_1.cmm
-2020-C_2.cmm segmentation fault
-2020-D_1.cmm
-normal3 test [A-4.cmm]
-normal3 test [A-5.cmm] mismatch or TLE
+2020-C_1.cmm Wrong on input [5, 2, 5, 4, 15, 1, 30, 2, 60, 8, 3]Output mismatch!(you output less than supposed)
+2020-D_1.cmm Output mismatch! expected 31527515, found 31465140 at line 2
+normal3 test [A-5.cmm] Wrong on input [0, 0, 0, 0]
+B-3.cmm Wrong on input [1, 5, 4, 2, 3] Output mismatch! expected 1, found 0 at line 0
+[C-2.cmm] [0, 1]
+A-3.cmm [-10, -100, 12, 33, 5]
+B-3.cmm [5, 4, 3, 2, 1]

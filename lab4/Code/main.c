@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 
     tmpout = fopen("finalout.s", "w");
 
-    FILE *out_ir_ = fopen("ircode.txt", "w");
+    FILE *out_ir_ = fopen("ircode.r", "w");
 
     char *out2_name = argv[2];
 

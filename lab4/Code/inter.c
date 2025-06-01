@@ -934,6 +934,32 @@ void translateCond(Node* node, pOperand label_true, pOperand label_false) {
         return;
     }
     
+    // 检查是否是函数调用：ID LP [Args] RP
+    if (node->firstchild && 
+        !strcmp_safe_(node->firstchild->name, "ID") && 
+        node->firstchild->nextsib && 
+        !strcmp_safe_(node->firstchild->nextsib->name, "LP")) {
+        
+        // 函数调用作为条件表达式
+        pOperand t = newTemporary();
+        translateExp(node, t);  // 获取函数返回值
+        
+        pOperand zero = newConstant(0);
+        
+        pInstruction ifGotoInstr = newInstruction(IF_GOTO);
+        ifGotoInstr->u.if_goto.x = t;
+        ifGotoInstr->u.if_goto.y = zero;
+        ifGotoInstr->u.if_goto.z = label_true;
+        ifGotoInstr->u.if_goto.relop = (char*)malloc(10 * sizeof(char));
+        strcpy(ifGotoInstr->u.if_goto.relop, "!=");
+        appendInstruction(ifGotoInstr);
+        
+        pInstruction gotoInstr = newInstruction(GOTO);
+        gotoInstr->u.singleop.op = label_false;
+        appendInstruction(gotoInstr);
+        return;
+    }
+    
     if (!strcmp_safe_(node->firstchild->name, "Exp") && 
         node->firstchild->nextsib && 
         node->firstchild->nextsib->nextsib &&
@@ -998,8 +1024,15 @@ void translateCond(Node* node, pOperand label_true, pOperand label_false) {
         // NOT operation: NOT Exp
         translateCond(node->firstchild->nextsib, label_false, label_true);
     }
-    else {
-        // Other expressions treated as a boolean value
+    // 其他可能的问题情况：
+    
+    // 数组访问作为条件：Exp[Exp]
+    if (node->firstchild && 
+        !strcmp_safe_(node->firstchild->name, "Exp") && 
+        node->firstchild->nextsib && 
+        !strcmp_safe_(node->firstchild->nextsib->name, "LB")) {
+        
+        // 数组访问作为条件表达式
         pOperand t = newTemporary();
         translateExp(node, t);
         
@@ -1009,6 +1042,54 @@ void translateCond(Node* node, pOperand label_true, pOperand label_false) {
         ifGotoInstr->u.if_goto.x = t;
         ifGotoInstr->u.if_goto.y = zero;
         ifGotoInstr->u.if_goto.z = label_true;
+        ifGotoInstr->u.if_goto.relop = (char*)malloc(10 * sizeof(char));
+        strcpy(ifGotoInstr->u.if_goto.relop, "!=");
+        appendInstruction(ifGotoInstr);
+        
+        pInstruction gotoInstr = newInstruction(GOTO);
+        gotoInstr->u.singleop.op = label_false;
+        appendInstruction(gotoInstr);
+        return;
+    }
+    
+    // 结构体字段访问作为条件：Exp.ID
+    if (node->firstchild && 
+        !strcmp_safe_(node->firstchild->name, "Exp") && 
+        node->firstchild->nextsib && 
+        !strcmp_safe_(node->firstchild->nextsib->name, "DOT")) {
+        
+        // 结构体字段访问作为条件表达式
+        pOperand t = newTemporary();
+        translateExp(node, t);
+        
+        pOperand zero = newConstant(0);
+        
+        pInstruction ifGotoInstr = newInstruction(IF_GOTO);
+        ifGotoInstr->u.if_goto.x = t;
+        ifGotoInstr->u.if_goto.y = zero;
+        ifGotoInstr->u.if_goto.z = label_true;
+        ifGotoInstr->u.if_goto.relop = (char*)malloc(10 * sizeof(char));
+        strcpy(ifGotoInstr->u.if_goto.relop, "!=");
+        appendInstruction(ifGotoInstr);
+        
+        pInstruction gotoInstr = newInstruction(GOTO);
+        gotoInstr->u.singleop.op = label_false;
+        appendInstruction(gotoInstr);
+        return;
+    }
+    
+    else {
+        // 其他表达式（变量、常量等）作为布尔值
+        pOperand t = newTemporary();
+        translateExp(node, t);
+        
+        pOperand zero = newConstant(0);
+        
+        pInstruction ifGotoInstr = newInstruction(IF_GOTO);
+        ifGotoInstr->u.if_goto.x = t;
+        ifGotoInstr->u.if_goto.y = zero;
+        ifGotoInstr->u.if_goto.z = label_true;
+        ifGotoInstr->u.if_goto.relop = (char*)malloc(10 * sizeof(char));
         strcpy(ifGotoInstr->u.if_goto.relop, "!=");
         appendInstruction(ifGotoInstr);
         
