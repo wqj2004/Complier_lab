@@ -921,6 +921,19 @@ void translateArgs(Node* node) {
 void translateCond(Node* node, pOperand label_true, pOperand label_false) {
     if (!node) return;
     
+    // 首先检查是否是括号表达式：LP Exp RP
+    if (node->firstchild && 
+        !strcmp_safe_(node->firstchild->name, "LP") && 
+        node->firstchild->nextsib && 
+        !strcmp_safe_(node->firstchild->nextsib->name, "Exp") &&
+        node->firstchild->nextsib->nextsib &&
+        !strcmp_safe_(node->firstchild->nextsib->nextsib->name, "RP")) {
+        
+        // 括号表达式，递归处理内部表达式
+        translateCond(node->firstchild->nextsib, label_true, label_false);
+        return;
+    }
+    
     if (!strcmp_safe_(node->firstchild->name, "Exp") && 
         node->firstchild->nextsib && 
         node->firstchild->nextsib->nextsib &&

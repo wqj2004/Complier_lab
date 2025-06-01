@@ -30,6 +30,8 @@ int main(int argc, char **argv)
 
     tmpout = fopen("finalout.s", "w");
 
+    FILE *out_ir_ = fopen("ircode.txt", "w");
+
     char *out2_name = argv[2];
 
     if (lexerror_count == 0 && synerror_count == 0)
@@ -40,12 +42,12 @@ int main(int argc, char **argv)
         initInterCodeGen();
         translateProgram(root);
         // FILE *out = fopen(argv[2], "w");
-        // // FILE *out = stdout;
-        // if (out)
-        // {
-        //     outputInterCode(out);
-        //     fclose(out);
-        // }
+        // FILE *out = stdout;
+        if (out_ir_)
+        {   
+            outputInterCode(out_ir_);
+            fclose(out_ir_);
+        }
         // else
         // {
         //     fprintf(stderr, "Error opening output file.\n");
