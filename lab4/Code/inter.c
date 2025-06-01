@@ -901,20 +901,20 @@ void translateExp(Node* node, pOperand place) {
 void translateArgs(Node* node) {
     if (!node) return;
     
-    // Current argument
+    // Process arguments from left to right
     Node* exp = node->firstchild;
     pOperand t = newTemporary();
     translateExp(exp, t);
     
-    // Process other arguments first (reverse order for stack)
-    if (exp->nextsib && exp->nextsib->nextsib) {
-        translateArgs(exp->nextsib->nextsib);
-    }
-    
-    // Add current argument
+    // Add current argument first
     pInstruction argInstr = newInstruction(ARG);
     argInstr->u.singleop.op = t;
     appendInstruction(argInstr);
+    
+    // Then process remaining arguments
+    if (exp->nextsib && exp->nextsib->nextsib) {
+        translateArgs(exp->nextsib->nextsib);
+    }
 }
 
 // Translate condition
