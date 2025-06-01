@@ -4,8 +4,21 @@ Program (1)
       Specifier (1)
         TYPE: int
       FunDec (1)
-        ID: main
+        ID: mod
         LP
+        VarList (1)
+          ParamDec (1)
+            Specifier (1)
+              TYPE: int
+            VarDec (1)
+              ID: number2
+          COMMA
+          VarList (1)
+            ParamDec (1)
+              Specifier (1)
+                TYPE: int
+              VarDec (1)
+                ID: m2
         RP
       CompSt (1)
         LC
@@ -16,28 +29,22 @@ Program (1)
             DecList (2)
               Dec (2)
                 VarDec (2)
-                  ID: n
+                  ID: result
                 ASSIGNOP
                 Exp (2)
-                  INT: 5
-              COMMA
-              DecList (2)
-                Dec (2)
-                  VarDec (2)
-                    VarDec (2)
-                      ID: arr
-                    LB
-                    INT: 5
-                    RB
-                COMMA
-                DecList (2)
-                  Dec (2)
-                    VarDec (2)
-                      VarDec (2)
-                        ID: tmp
-                      LB
-                      INT: 5
-                      RB
+                  Exp (2)
+                    ID: number2
+                  MINUS
+                  Exp (2)
+                    Exp (2)
+                      Exp (2)
+                        ID: number2
+                      DIV
+                      Exp (2)
+                        ID: m2
+                    STAR
+                    Exp (2)
+                      ID: m2
             SEMI
           DefList (3)
             Def (3)
@@ -46,985 +53,559 @@ Program (1)
               DecList (3)
                 Dec (3)
                   VarDec (3)
-                    ID: i
-                COMMA
-                DecList (3)
-                  Dec (3)
-                    VarDec (3)
-                      ID: intv
+                    ID: result2
+                  ASSIGNOP
+                  Exp (3)
+                    ID: result
               SEMI
-            DefList (4)
-              Def (4)
-                Specifier (4)
-                  TYPE: int
-                DecList (4)
-                  Dec (4)
-                    VarDec (4)
-                      ID: s1
-                  COMMA
-                  DecList (4)
-                    Dec (4)
-                      VarDec (4)
-                        ID: e1
-                    COMMA
-                    DecList (4)
-                      Dec (4)
-                        VarDec (4)
-                          ID: cur1
-                      COMMA
-                      DecList (4)
-                        Dec (4)
-                          VarDec (4)
-                            ID: s2
-                        COMMA
-                        DecList (4)
-                          Dec (4)
-                            VarDec (4)
-                              ID: e2
-                          COMMA
-                          DecList (4)
-                            Dec (4)
-                              VarDec (4)
-                                ID: cur2
-                SEMI
-        StmtList (5)
-          Stmt (5)
-            Exp (5)
-              Exp (5)
-                ID: i
-              ASSIGNOP
-              Exp (5)
-                INT: 0
+        StmtList (4)
+          Stmt (4)
+            RETURN
+            Exp (4)
+              ID: result
             SEMI
-          StmtList (6)
-            Stmt (6)
+        RC
+    ExtDefList (6)
+      ExtDef (6)
+        Specifier (6)
+          TYPE: int
+        FunDec (6)
+          ID: power
+          LP
+          VarList (6)
+            ParamDec (6)
+              Specifier (6)
+                TYPE: int
+              VarDec (6)
+                ID: base1
+            COMMA
+            VarList (6)
+              ParamDec (6)
+                Specifier (6)
+                  TYPE: int
+                VarDec (6)
+                  ID: p1
+          RP
+        CompSt (6)
+          LC
+          DefList (7)
+            Def (7)
+              Specifier (7)
+                TYPE: int
+              DecList (7)
+                Dec (7)
+                  VarDec (7)
+                    ID: ret1
+                  ASSIGNOP
+                  Exp (7)
+                    Exp (7)
+                      Exp (7)
+                        INT: 1
+                      PLUS
+                      Exp (7)
+                        ID: p1
+                    MINUS
+                    Exp (7)
+                      ID: p1
+              SEMI
+          StmtList (8)
+            Stmt (8)
               WHILE
               LP
-              Exp (6)
-                Exp (6)
-                  ID: i
+              Exp (8)
+                Exp (8)
+                  ID: p1
                 RELOP
-                Exp (6)
-                  ID: n
-              RP
-              Stmt (6)
-                CompSt (6)
-                  LC
-                  StmtList (7)
-                    Stmt (7)
-                      Exp (7)
-                        Exp (7)
-                          Exp (7)
-                            ID: arr
-                          LB
-                          Exp (7)
-                            ID: i
-                          RB
-                        ASSIGNOP
-                        Exp (7)
-                          ID: read
-                          LP
-                          RP
-                      SEMI
-                    StmtList (8)
-                      Stmt (8)
+                Exp (8)
+                  LP
+                  Exp (8)
+                    Exp (8)
+                      Exp (8)
                         Exp (8)
                           Exp (8)
-                            ID: i
-                          ASSIGNOP
+                            Exp (8)
+                              ID: ret1
+                            MINUS
+                            Exp (8)
+                              ID: ret1
+                          PLUS
                           Exp (8)
-                            Exp (8)
-                              ID: i
-                            PLUS
-                            Exp (8)
+                            INT: 90
+                        MINUS
+                        Exp (8)
+                          INT: 89
+                      PLUS
+                      Exp (8)
+                        INT: 1
+                    MINUS
+                    Exp (8)
+                      INT: 2
+                  RP
+              RP
+              Stmt (8)
+                CompSt (8)
+                  LC
+                  StmtList (9)
+                    Stmt (9)
+                      Exp (9)
+                        Exp (9)
+                          ID: ret1
+                        ASSIGNOP
+                        Exp (9)
+                          Exp (9)
+                            ID: ret1
+                          STAR
+                          Exp (9)
+                            ID: base1
+                      SEMI
+                    StmtList (10)
+                      Stmt (10)
+                        Exp (10)
+                          Exp (10)
+                            ID: p1
+                          ASSIGNOP
+                          Exp (10)
+                            Exp (10)
+                              Exp (10)
+                                Exp (10)
+                                  Exp (10)
+                                    INT: 2
+                                  STAR
+                                  Exp (10)
+                                    INT: 1
+                                STAR
+                                Exp (10)
+                                  ID: p1
+                              MINUS
+                              Exp (10)
+                                Exp (10)
+                                  INT: 1
+                                STAR
+                                Exp (10)
+                                  ID: p1
+                            MINUS
+                            Exp (10)
                               INT: 1
                         SEMI
                   RC
-            StmtList (11)
-              Stmt (11)
-                Exp (11)
-                  Exp (11)
-                    ID: intv
-                  ASSIGNOP
-                  Exp (11)
-                    INT: 1
+            StmtList (12)
+              Stmt (12)
+                RETURN
+                Exp (12)
+                  ID: ret1
                 SEMI
-              StmtList (12)
-                Stmt (12)
+          RC
+      ExtDefList (14)
+        ExtDef (14)
+          Specifier (14)
+            TYPE: int
+          FunDec (14)
+            ID: getNumDigits
+            LP
+            VarList (14)
+              ParamDec (14)
+                Specifier (14)
+                  TYPE: int
+                VarDec (14)
+                  ID: number3
+            RP
+          CompSt (14)
+            LC
+            DefList (15)
+              Def (15)
+                Specifier (15)
+                  TYPE: int
+                DecList (15)
+                  Dec (15)
+                    VarDec (15)
+                      ID: ret3
+                    ASSIGNOP
+                    Exp (15)
+                      INT: 0
+                SEMI
+            StmtList (16)
+              Stmt (16)
+                IF
+                LP
+                Exp (16)
+                  Exp (16)
+                    ID: number3
+                  RELOP
+                  Exp (16)
+                    INT: 0
+                RP
+                Stmt (16)
+                  RETURN
+                  Exp (16)
+                    MINUS
+                    Exp (16)
+                      INT: 1
+                  SEMI
+              StmtList (17)
+                Stmt (17)
                   WHILE
                   LP
-                  Exp (12)
-                    Exp (12)
-                      ID: intv
+                  Exp (17)
+                    Exp (17)
+                      ID: number3
                     RELOP
-                    Exp (12)
-                      ID: n
+                    Exp (17)
+                      INT: 0
                   RP
-                  Stmt (12)
-                    CompSt (12)
+                  Stmt (17)
+                    CompSt (17)
                       LC
-                      StmtList (13)
-                        Stmt (13)
-                          Exp (13)
-                            Exp (13)
-                              ID: i
+                      StmtList (18)
+                        Stmt (18)
+                          Exp (18)
+                            Exp (18)
+                              ID: number3
                             ASSIGNOP
-                            Exp (13)
-                              INT: 0
+                            Exp (18)
+                              Exp (18)
+                                ID: number3
+                              DIV
+                              Exp (18)
+                                INT: 10
                           SEMI
-                        StmtList (14)
-                          Stmt (14)
-                            WHILE
-                            LP
-                            Exp (14)
-                              Exp (14)
-                                ID: i
-                              RELOP
-                              Exp (14)
-                                Exp (14)
-                                  ID: n
-                                MINUS
-                                Exp (14)
-                                  Exp (14)
+                        StmtList (19)
+                          Stmt (19)
+                            Exp (19)
+                              Exp (19)
+                                ID: ret3
+                              ASSIGNOP
+                              Exp (19)
+                                Exp (19)
+                                  ID: ret3
+                                PLUS
+                                Exp (19)
+                                  INT: 2
+                            SEMI
+                          StmtList (20)
+                            Stmt (20)
+                              Exp (20)
+                                Exp (20)
+                                  ID: ret3
+                                ASSIGNOP
+                                Exp (20)
+                                  Exp (20)
+                                    ID: ret3
+                                  PLUS
+                                  Exp (20)
                                     INT: 2
-                                  STAR
-                                  Exp (14)
-                                    ID: intv
-                            RP
-                            Stmt (14)
-                              CompSt (14)
-                                LC
-                                StmtList (15)
-                                  Stmt (15)
-                                    Exp (15)
-                                      Exp (15)
-                                        ID: s1
-                                      ASSIGNOP
-                                      Exp (15)
-                                        ID: i
-                                    SEMI
-                                  StmtList (16)
-                                    Stmt (16)
-                                      Exp (16)
-                                        Exp (16)
-                                          ID: e1
-                                        ASSIGNOP
-                                        Exp (16)
-                                          Exp (16)
-                                            ID: s1
-                                          PLUS
-                                          Exp (16)
-                                            ID: intv
-                                      SEMI
-                                    StmtList (17)
-                                      Stmt (17)
-                                        Exp (17)
-                                          Exp (17)
-                                            ID: cur1
-                                          ASSIGNOP
-                                          Exp (17)
-                                            ID: s1
-                                        SEMI
-                                      StmtList (18)
-                                        Stmt (18)
-                                          Exp (18)
-                                            Exp (18)
-                                              ID: s2
-                                            ASSIGNOP
-                                            Exp (18)
-                                              ID: e1
-                                          SEMI
-                                        StmtList (19)
-                                          Stmt (19)
-                                            Exp (19)
-                                              Exp (19)
-                                                ID: e2
-                                              ASSIGNOP
-                                              Exp (19)
-                                                Exp (19)
-                                                  ID: s2
-                                                PLUS
-                                                Exp (19)
-                                                  ID: intv
-                                            SEMI
-                                          StmtList (20)
-                                            Stmt (20)
-                                              Exp (20)
-                                                Exp (20)
-                                                  ID: cur2
-                                                ASSIGNOP
-                                                Exp (20)
-                                                  ID: s2
-                                              SEMI
-                                            StmtList (21)
-                                              Stmt (21)
-                                                WHILE
-                                                LP
-                                                Exp (21)
-                                                  Exp (21)
-                                                    Exp (21)
-                                                      ID: cur1
-                                                    RELOP
-                                                    Exp (21)
-                                                      ID: e1
-                                                  AND
-                                                  Exp (21)
-                                                    Exp (21)
-                                                      ID: cur2
-                                                    RELOP
-                                                    Exp (21)
-                                                      ID: e2
-                                                RP
-                                                Stmt (21)
-                                                  CompSt (21)
-                                                    LC
-                                                    StmtList (22)
-                                                      Stmt (22)
-                                                        IF
-                                                        LP
-                                                        Exp (22)
-                                                          Exp (22)
-                                                            Exp (22)
-                                                              ID: arr
-                                                            LB
-                                                            Exp (22)
-                                                              ID: cur1
-                                                            RB
-                                                          RELOP
-                                                          Exp (22)
-                                                            Exp (22)
-                                                              ID: arr
-                                                            LB
-                                                            Exp (22)
-                                                              ID: cur2
-                                                            RB
-                                                        RP
-                                                        Stmt (22)
-                                                          CompSt (22)
-                                                            LC
-                                                            StmtList (23)
-                                                              Stmt (23)
-                                                                Exp (23)
-                                                                  Exp (23)
-                                                                    Exp (23)
-                                                                      ID: tmp
-                                                                    LB
-                                                                    Exp (23)
-                                                                      ID: i
-                                                                    RB
-                                                                  ASSIGNOP
-                                                                  Exp (23)
-                                                                    Exp (23)
-                                                                      ID: arr
-                                                                    LB
-                                                                    Exp (23)
-                                                                      ID: cur1
-                                                                    RB
-                                                                SEMI
-                                                              StmtList (24)
-                                                                Stmt (24)
-                                                                  Exp (24)
-                                                                    Exp (24)
-                                                                      ID: cur1
-                                                                    ASSIGNOP
-                                                                    Exp (24)
-                                                                      Exp (24)
-                                                                        ID: cur1
-                                                                      PLUS
-                                                                      Exp (24)
-                                                                        INT: 1
-                                                                  SEMI
-                                                            RC
-                                                        ELSE
-                                                        Stmt (25)
-                                                          CompSt (25)
-                                                            LC
-                                                            StmtList (26)
-                                                              Stmt (26)
-                                                                Exp (26)
-                                                                  Exp (26)
-                                                                    Exp (26)
-                                                                      ID: tmp
-                                                                    LB
-                                                                    Exp (26)
-                                                                      ID: i
-                                                                    RB
-                                                                  ASSIGNOP
-                                                                  Exp (26)
-                                                                    Exp (26)
-                                                                      ID: arr
-                                                                    LB
-                                                                    Exp (26)
-                                                                      ID: cur2
-                                                                    RB
-                                                                SEMI
-                                                              StmtList (27)
-                                                                Stmt (27)
-                                                                  Exp (27)
-                                                                    Exp (27)
-                                                                      ID: cur2
-                                                                    ASSIGNOP
-                                                                    Exp (27)
-                                                                      Exp (27)
-                                                                        ID: cur2
-                                                                      PLUS
-                                                                      Exp (27)
-                                                                        INT: 1
-                                                                  SEMI
-                                                            RC
-                                                      StmtList (29)
-                                                        Stmt (29)
-                                                          Exp (29)
-                                                            Exp (29)
-                                                              ID: i
-                                                            ASSIGNOP
-                                                            Exp (29)
-                                                              Exp (29)
-                                                                ID: i
-                                                              PLUS
-                                                              Exp (29)
-                                                                INT: 1
-                                                          SEMI
-                                                    RC
-                                              StmtList (31)
-                                                Stmt (31)
-                                                  WHILE
-                                                  LP
-                                                  Exp (31)
-                                                    Exp (31)
-                                                      ID: cur1
-                                                    RELOP
-                                                    Exp (31)
-                                                      ID: e1
-                                                  RP
-                                                  Stmt (31)
-                                                    CompSt (31)
-                                                      LC
-                                                      StmtList (32)
-                                                        Stmt (32)
-                                                          Exp (32)
-                                                            Exp (32)
-                                                              Exp (32)
-                                                                ID: tmp
-                                                              LB
-                                                              Exp (32)
-                                                                ID: i
-                                                              RB
-                                                            ASSIGNOP
-                                                            Exp (32)
-                                                              Exp (32)
-                                                                ID: arr
-                                                              LB
-                                                              Exp (32)
-                                                                ID: cur1
-                                                              RB
-                                                          SEMI
-                                                        StmtList (33)
-                                                          Stmt (33)
-                                                            Exp (33)
-                                                              Exp (33)
-                                                                ID: cur1
-                                                              ASSIGNOP
-                                                              Exp (33)
-                                                                Exp (33)
-                                                                  ID: cur1
-                                                                PLUS
-                                                                Exp (33)
-                                                                  INT: 1
-                                                            SEMI
-                                                          StmtList (34)
-                                                            Stmt (34)
-                                                              Exp (34)
-                                                                Exp (34)
-                                                                  ID: i
-                                                                ASSIGNOP
-                                                                Exp (34)
-                                                                  Exp (34)
-                                                                    ID: i
-                                                                  PLUS
-                                                                  Exp (34)
-                                                                    INT: 1
-                                                              SEMI
-                                                      RC
-                                                StmtList (36)
-                                                  Stmt (36)
-                                                    WHILE
-                                                    LP
-                                                    Exp (36)
-                                                      Exp (36)
-                                                        ID: cur2
-                                                      RELOP
-                                                      Exp (36)
-                                                        ID: e2
-                                                    RP
-                                                    Stmt (36)
-                                                      CompSt (36)
-                                                        LC
-                                                        StmtList (37)
-                                                          Stmt (37)
-                                                            Exp (37)
-                                                              Exp (37)
-                                                                Exp (37)
-                                                                  ID: tmp
-                                                                LB
-                                                                Exp (37)
-                                                                  ID: i
-                                                                RB
-                                                              ASSIGNOP
-                                                              Exp (37)
-                                                                Exp (37)
-                                                                  ID: arr
-                                                                LB
-                                                                Exp (37)
-                                                                  ID: cur2
-                                                                RB
-                                                            SEMI
-                                                          StmtList (38)
-                                                            Stmt (38)
-                                                              Exp (38)
-                                                                Exp (38)
-                                                                  ID: cur2
-                                                                ASSIGNOP
-                                                                Exp (38)
-                                                                  Exp (38)
-                                                                    ID: cur2
-                                                                  PLUS
-                                                                  Exp (38)
-                                                                    INT: 1
-                                                              SEMI
-                                                            StmtList (39)
-                                                              Stmt (39)
-                                                                Exp (39)
-                                                                  Exp (39)
-                                                                    ID: i
-                                                                  ASSIGNOP
-                                                                  Exp (39)
-                                                                    Exp (39)
-                                                                      ID: i
-                                                                    PLUS
-                                                                    Exp (39)
-                                                                      INT: 1
-                                                                SEMI
-                                                        RC
-                                RC
-                          StmtList (43)
-                            Stmt (43)
-                              IF
+                              SEMI
+                            StmtList (21)
+                              Stmt (21)
+                                Exp (21)
+                                  Exp (21)
+                                    ID: ret3
+                                  ASSIGNOP
+                                  Exp (21)
+                                    Exp (21)
+                                      ID: ret3
+                                    MINUS
+                                    Exp (21)
+                                      INT: 3
+                                SEMI
+                      RC
+                StmtList (23)
+                  Stmt (23)
+                    RETURN
+                    Exp (23)
+                      ID: ret3
+                    SEMI
+            RC
+        ExtDefList (25)
+          ExtDef (25)
+            Specifier (25)
+              TYPE: int
+            FunDec (25)
+              ID: isNarcissistic
+              LP
+              VarList (25)
+                ParamDec (25)
+                  Specifier (25)
+                    TYPE: int
+                  VarDec (25)
+                    ID: number4
+              RP
+            CompSt (25)
+              LC
+              DefList (26)
+                Def (26)
+                  Specifier (26)
+                    TYPE: int
+                  DecList (26)
+                    Dec (26)
+                      VarDec (26)
+                        ID: numDigits4
+                      ASSIGNOP
+                      Exp (26)
+                        ID: getNumDigits
+                        LP
+                        Args (26)
+                          Exp (26)
+                            Exp (26)
+                              Exp (26)
+                                INT: 1
+                              PLUS
+                              Exp (26)
+                                ID: number4
+                            MINUS
+                            Exp (26)
+                              INT: 1
+                        RP
+                  SEMI
+                DefList (27)
+                  Def (27)
+                    Specifier (27)
+                      TYPE: int
+                    DecList (27)
+                      Dec (27)
+                        VarDec (27)
+                          ID: sum4
+                        ASSIGNOP
+                        Exp (27)
+                          INT: 0
+                    SEMI
+                  DefList (28)
+                    Def (28)
+                      Specifier (28)
+                        TYPE: int
+                      DecList (28)
+                        Dec (28)
+                          VarDec (28)
+                            ID: n4
+                          ASSIGNOP
+                          Exp (28)
+                            ID: number4
+                      SEMI
+                    DefList (29)
+                      Def (29)
+                        Specifier (29)
+                          TYPE: int
+                        DecList (29)
+                          Dec (29)
+                            VarDec (29)
+                              ID: s4
+                        SEMI
+              StmtList (30)
+                Stmt (30)
+                  WHILE
+                  LP
+                  Exp (30)
+                    Exp (30)
+                      ID: n4
+                    RELOP
+                    Exp (30)
+                      INT: 0
+                  RP
+                  Stmt (30)
+                    CompSt (30)
+                      LC
+                      StmtList (31)
+                        Stmt (31)
+                          Exp (31)
+                            Exp (31)
+                              ID: s4
+                            ASSIGNOP
+                            Exp (31)
+                              ID: mod
                               LP
-                              Exp (43)
-                                Exp (43)
-                                  Exp (43)
+                              Args (31)
+                                Exp (31)
+                                  ID: n4
+                                COMMA
+                                Args (31)
+                                  Exp (31)
+                                    INT: 10
+                              RP
+                          SEMI
+                        StmtList (32)
+                          Stmt (32)
+                            Exp (32)
+                              Exp (32)
+                                ID: n4
+                              ASSIGNOP
+                              Exp (32)
+                                Exp (32)
+                                  LP
+                                  Exp (32)
+                                    Exp (32)
+                                      ID: n4
+                                    MINUS
+                                    Exp (32)
+                                      ID: s4
+                                  RP
+                                DIV
+                                Exp (32)
+                                  INT: 10
+                            SEMI
+                          StmtList (33)
+                            Stmt (33)
+                              Exp (33)
+                                Exp (33)
+                                  ID: sum4
+                                ASSIGNOP
+                                Exp (33)
+                                  Exp (33)
+                                    ID: sum4
+                                  PLUS
+                                  Exp (33)
+                                    ID: power
+                                    LP
+                                    Args (33)
+                                      Exp (33)
+                                        ID: s4
+                                      COMMA
+                                      Args (33)
+                                        Exp (33)
+                                          ID: numDigits4
+                                    RP
+                              SEMI
+                      RC
+                StmtList (35)
+                  Stmt (35)
+                    IF
+                    LP
+                    Exp (35)
+                      Exp (35)
+                        ID: sum4
+                      RELOP
+                      Exp (35)
+                        ID: number4
+                    RP
+                    Stmt (36)
+                      RETURN
+                      Exp (36)
+                        INT: 1
+                      SEMI
+                    ELSE
+                    Stmt (38)
+                      RETURN
+                      Exp (38)
+                        INT: 0
+                      SEMI
+              RC
+          ExtDefList (40)
+            ExtDef (40)
+              Specifier (40)
+                TYPE: int
+              FunDec (40)
+                ID: main
+                LP
+                RP
+              CompSt (40)
+                LC
+                DefList (41)
+                  Def (41)
+                    Specifier (41)
+                      TYPE: int
+                    DecList (41)
+                      Dec (41)
+                        VarDec (41)
+                          ID: count
+                        ASSIGNOP
+                        Exp (41)
+                          INT: 0
+                    SEMI
+                  DefList (42)
+                    Def (42)
+                      Specifier (42)
+                        TYPE: int
+                      DecList (42)
+                        Dec (42)
+                          VarDec (42)
+                            ID: i
+                          ASSIGNOP
+                          Exp (42)
+                            INT: 300
+                      SEMI
+                StmtList (43)
+                  Stmt (43)
+                    WHILE
+                    LP
+                    Exp (43)
+                      Exp (43)
+                        ID: i
+                      RELOP
+                      Exp (43)
+                        INT: 500
+                    RP
+                    Stmt (43)
+                      CompSt (43)
+                        LC
+                        StmtList (44)
+                          Stmt (44)
+                            IF
+                            LP
+                            Exp (44)
+                              Exp (44)
+                                ID: isNarcissistic
+                                LP
+                                Args (44)
+                                  Exp (44)
+                                    ID: i
+                                RP
+                              RELOP
+                              Exp (44)
+                                INT: 1
+                            RP
+                            Stmt (44)
+                              CompSt (44)
+                                LC
+                                StmtList (45)
+                                  Stmt (45)
+                                    Exp (45)
+                                      ID: write
+                                      LP
+                                      Args (45)
+                                        Exp (45)
+                                          ID: i
+                                      RP
+                                    SEMI
+                                  StmtList (46)
+                                    Stmt (46)
+                                      Exp (46)
+                                        Exp (46)
+                                          ID: count
+                                        ASSIGNOP
+                                        Exp (46)
+                                          Exp (46)
+                                            ID: count
+                                          PLUS
+                                          Exp (46)
+                                            INT: 1
+                                      SEMI
+                                RC
+                          StmtList (48)
+                            Stmt (48)
+                              Exp (48)
+                                Exp (48)
+                                  ID: i
+                                ASSIGNOP
+                                Exp (48)
+                                  Exp (48)
                                     ID: i
                                   PLUS
-                                  Exp (43)
-                                    ID: intv
-                                RELOP
-                                Exp (43)
-                                  ID: n
-                              RP
-                              Stmt (43)
-                                CompSt (43)
-                                  LC
-                                  StmtList (44)
-                                    Stmt (44)
-                                      Exp (44)
-                                        Exp (44)
-                                          ID: s1
-                                        ASSIGNOP
-                                        Exp (44)
-                                          ID: i
-                                      SEMI
-                                    StmtList (45)
-                                      Stmt (45)
-                                        Exp (45)
-                                          Exp (45)
-                                            ID: e1
-                                          ASSIGNOP
-                                          Exp (45)
-                                            Exp (45)
-                                              ID: s1
-                                            PLUS
-                                            Exp (45)
-                                              ID: intv
-                                        SEMI
-                                      StmtList (46)
-                                        Stmt (46)
-                                          Exp (46)
-                                            Exp (46)
-                                              ID: cur1
-                                            ASSIGNOP
-                                            Exp (46)
-                                              ID: s1
-                                          SEMI
-                                        StmtList (47)
-                                          Stmt (47)
-                                            Exp (47)
-                                              Exp (47)
-                                                ID: s2
-                                              ASSIGNOP
-                                              Exp (47)
-                                                ID: e1
-                                            SEMI
-                                          StmtList (48)
-                                            Stmt (48)
-                                              Exp (48)
-                                                Exp (48)
-                                                  ID: e2
-                                                ASSIGNOP
-                                                Exp (48)
-                                                  ID: n
-                                              SEMI
-                                            StmtList (49)
-                                              Stmt (49)
-                                                Exp (49)
-                                                  Exp (49)
-                                                    ID: cur2
-                                                  ASSIGNOP
-                                                  Exp (49)
-                                                    ID: s2
-                                                SEMI
-                                              StmtList (50)
-                                                Stmt (50)
-                                                  WHILE
-                                                  LP
-                                                  Exp (50)
-                                                    Exp (50)
-                                                      Exp (50)
-                                                        ID: cur1
-                                                      RELOP
-                                                      Exp (50)
-                                                        ID: e1
-                                                    AND
-                                                    Exp (50)
-                                                      Exp (50)
-                                                        ID: cur2
-                                                      RELOP
-                                                      Exp (50)
-                                                        ID: e2
-                                                  RP
-                                                  Stmt (50)
-                                                    CompSt (50)
-                                                      LC
-                                                      StmtList (51)
-                                                        Stmt (51)
-                                                          IF
-                                                          LP
-                                                          Exp (51)
-                                                            Exp (51)
-                                                              Exp (51)
-                                                                ID: arr
-                                                              LB
-                                                              Exp (51)
-                                                                ID: cur1
-                                                              RB
-                                                            RELOP
-                                                            Exp (51)
-                                                              Exp (51)
-                                                                ID: arr
-                                                              LB
-                                                              Exp (51)
-                                                                ID: cur2
-                                                              RB
-                                                          RP
-                                                          Stmt (51)
-                                                            CompSt (51)
-                                                              LC
-                                                              StmtList (52)
-                                                                Stmt (52)
-                                                                  Exp (52)
-                                                                    Exp (52)
-                                                                      Exp (52)
-                                                                        ID: tmp
-                                                                      LB
-                                                                      Exp (52)
-                                                                        ID: i
-                                                                      RB
-                                                                    ASSIGNOP
-                                                                    Exp (52)
-                                                                      Exp (52)
-                                                                        ID: arr
-                                                                      LB
-                                                                      Exp (52)
-                                                                        ID: cur1
-                                                                      RB
-                                                                  SEMI
-                                                                StmtList (53)
-                                                                  Stmt (53)
-                                                                    Exp (53)
-                                                                      Exp (53)
-                                                                        ID: cur1
-                                                                      ASSIGNOP
-                                                                      Exp (53)
-                                                                        Exp (53)
-                                                                          ID: cur1
-                                                                        PLUS
-                                                                        Exp (53)
-                                                                          INT: 1
-                                                                    SEMI
-                                                                  StmtList (54)
-                                                                    Stmt (54)
-                                                                      Exp (54)
-                                                                        Exp (54)
-                                                                          ID: i
-                                                                        ASSIGNOP
-                                                                        Exp (54)
-                                                                          Exp (54)
-                                                                            ID: i
-                                                                          PLUS
-                                                                          Exp (54)
-                                                                            INT: 1
-                                                                      SEMI
-                                                              RC
-                                                          ELSE
-                                                          Stmt (55)
-                                                            CompSt (55)
-                                                              LC
-                                                              StmtList (56)
-                                                                Stmt (56)
-                                                                  Exp (56)
-                                                                    Exp (56)
-                                                                      Exp (56)
-                                                                        ID: tmp
-                                                                      LB
-                                                                      Exp (56)
-                                                                        ID: i
-                                                                      RB
-                                                                    ASSIGNOP
-                                                                    Exp (56)
-                                                                      Exp (56)
-                                                                        ID: arr
-                                                                      LB
-                                                                      Exp (56)
-                                                                        ID: cur2
-                                                                      RB
-                                                                  SEMI
-                                                                StmtList (57)
-                                                                  Stmt (57)
-                                                                    Exp (57)
-                                                                      Exp (57)
-                                                                        ID: cur2
-                                                                      ASSIGNOP
-                                                                      Exp (57)
-                                                                        Exp (57)
-                                                                          ID: cur2
-                                                                        PLUS
-                                                                        Exp (57)
-                                                                          INT: 1
-                                                                    SEMI
-                                                                  StmtList (58)
-                                                                    Stmt (58)
-                                                                      Exp (58)
-                                                                        Exp (58)
-                                                                          ID: i
-                                                                        ASSIGNOP
-                                                                        Exp (58)
-                                                                          Exp (58)
-                                                                            ID: i
-                                                                          PLUS
-                                                                          Exp (58)
-                                                                            INT: 1
-                                                                      SEMI
-                                                              RC
-                                                      RC
-                                                StmtList (61)
-                                                  Stmt (61)
-                                                    WHILE
-                                                    LP
-                                                    Exp (61)
-                                                      Exp (61)
-                                                        ID: cur1
-                                                      RELOP
-                                                      Exp (61)
-                                                        ID: e1
-                                                    RP
-                                                    Stmt (61)
-                                                      CompSt (61)
-                                                        LC
-                                                        StmtList (62)
-                                                          Stmt (62)
-                                                            Exp (62)
-                                                              Exp (62)
-                                                                Exp (62)
-                                                                  ID: tmp
-                                                                LB
-                                                                Exp (62)
-                                                                  ID: i
-                                                                RB
-                                                              ASSIGNOP
-                                                              Exp (62)
-                                                                Exp (62)
-                                                                  ID: arr
-                                                                LB
-                                                                Exp (62)
-                                                                  ID: cur1
-                                                                RB
-                                                            SEMI
-                                                          StmtList (63)
-                                                            Stmt (63)
-                                                              Exp (63)
-                                                                Exp (63)
-                                                                  ID: cur1
-                                                                ASSIGNOP
-                                                                Exp (63)
-                                                                  Exp (63)
-                                                                    ID: cur1
-                                                                  PLUS
-                                                                  Exp (63)
-                                                                    INT: 1
-                                                              SEMI
-                                                            StmtList (64)
-                                                              Stmt (64)
-                                                                Exp (64)
-                                                                  Exp (64)
-                                                                    ID: i
-                                                                  ASSIGNOP
-                                                                  Exp (64)
-                                                                    Exp (64)
-                                                                      ID: i
-                                                                    PLUS
-                                                                    Exp (64)
-                                                                      INT: 1
-                                                                SEMI
-                                                        RC
-                                                  StmtList (66)
-                                                    Stmt (66)
-                                                      WHILE
-                                                      LP
-                                                      Exp (66)
-                                                        Exp (66)
-                                                          ID: cur2
-                                                        RELOP
-                                                        Exp (66)
-                                                          ID: e2
-                                                      RP
-                                                      Stmt (66)
-                                                        CompSt (66)
-                                                          LC
-                                                          StmtList (67)
-                                                            Stmt (67)
-                                                              Exp (67)
-                                                                Exp (67)
-                                                                  Exp (67)
-                                                                    ID: tmp
-                                                                  LB
-                                                                  Exp (67)
-                                                                    ID: i
-                                                                  RB
-                                                                ASSIGNOP
-                                                                Exp (67)
-                                                                  Exp (67)
-                                                                    ID: arr
-                                                                  LB
-                                                                  Exp (67)
-                                                                    ID: cur2
-                                                                  RB
-                                                              SEMI
-                                                            StmtList (68)
-                                                              Stmt (68)
-                                                                Exp (68)
-                                                                  Exp (68)
-                                                                    ID: cur2
-                                                                  ASSIGNOP
-                                                                  Exp (68)
-                                                                    Exp (68)
-                                                                      ID: cur2
-                                                                    PLUS
-                                                                    Exp (68)
-                                                                      INT: 1
-                                                                SEMI
-                                                              StmtList (69)
-                                                                Stmt (69)
-                                                                  Exp (69)
-                                                                    Exp (69)
-                                                                      ID: i
-                                                                    ASSIGNOP
-                                                                    Exp (69)
-                                                                      Exp (69)
-                                                                        ID: i
-                                                                      PLUS
-                                                                      Exp (69)
-                                                                        INT: 1
-                                                                  SEMI
-                                                          RC
-                                  RC
-                              ELSE
-                              Stmt (71)
-                                CompSt (71)
-                                  LC
-                                  StmtList (72)
-                                    Stmt (72)
-                                      WHILE
-                                      LP
-                                      Exp (72)
-                                        Exp (72)
-                                          ID: i
-                                        RELOP
-                                        Exp (72)
-                                          ID: n
-                                      RP
-                                      Stmt (72)
-                                        CompSt (72)
-                                          LC
-                                          StmtList (73)
-                                            Stmt (73)
-                                              Exp (73)
-                                                Exp (73)
-                                                  Exp (73)
-                                                    ID: tmp
-                                                  LB
-                                                  Exp (73)
-                                                    ID: i
-                                                  RB
-                                                ASSIGNOP
-                                                Exp (73)
-                                                  Exp (73)
-                                                    ID: arr
-                                                  LB
-                                                  Exp (73)
-                                                    ID: i
-                                                  RB
-                                              SEMI
-                                            StmtList (74)
-                                              Stmt (74)
-                                                Exp (74)
-                                                  Exp (74)
-                                                    ID: i
-                                                  ASSIGNOP
-                                                  Exp (74)
-                                                    Exp (74)
-                                                      ID: i
-                                                    PLUS
-                                                    Exp (74)
-                                                      INT: 1
-                                                SEMI
-                                          RC
-                                  RC
-                            StmtList (78)
-                              Stmt (78)
-                                Exp (78)
-                                  Exp (78)
-                                    ID: i
-                                  ASSIGNOP
-                                  Exp (78)
-                                    INT: 0
-                                SEMI
-                              StmtList (79)
-                                Stmt (79)
-                                  WHILE
-                                  LP
-                                  Exp (79)
-                                    Exp (79)
-                                      ID: i
-                                    RELOP
-                                    Exp (79)
-                                      ID: n
-                                  RP
-                                  Stmt (79)
-                                    CompSt (79)
-                                      LC
-                                      StmtList (80)
-                                        Stmt (80)
-                                          Exp (80)
-                                            Exp (80)
-                                              Exp (80)
-                                                ID: arr
-                                              LB
-                                              Exp (80)
-                                                ID: i
-                                              RB
-                                            ASSIGNOP
-                                            Exp (80)
-                                              Exp (80)
-                                                ID: tmp
-                                              LB
-                                              Exp (80)
-                                                ID: i
-                                              RB
-                                          SEMI
-                                        StmtList (81)
-                                          Stmt (81)
-                                            Exp (81)
-                                              Exp (81)
-                                                ID: i
-                                              ASSIGNOP
-                                              Exp (81)
-                                                Exp (81)
-                                                  ID: i
-                                                PLUS
-                                                Exp (81)
-                                                  INT: 1
-                                            SEMI
-                                      RC
-                                StmtList (83)
-                                  Stmt (83)
-                                    Exp (83)
-                                      Exp (83)
-                                        ID: intv
-                                      ASSIGNOP
-                                      Exp (83)
-                                        Exp (83)
-                                          ID: intv
-                                        STAR
-                                        Exp (83)
-                                          INT: 2
-                                    SEMI
-                      RC
-                StmtList (86)
-                  Stmt (86)
-                    Exp (86)
-                      Exp (86)
-                        ID: i
-                      ASSIGNOP
-                      Exp (86)
-                        INT: 0
-                    SEMI
-                  StmtList (87)
-                    Stmt (87)
-                      WHILE
-                      LP
-                      Exp (87)
-                        Exp (87)
-                          ID: i
-                        RELOP
-                        Exp (87)
-                          ID: n
-                      RP
-                      Stmt (87)
-                        CompSt (87)
-                          LC
-                          StmtList (88)
-                            Stmt (88)
-                              Exp (88)
-                                ID: write
-                                LP
-                                Args (88)
-                                  Exp (88)
-                                    Exp (88)
-                                      ID: arr
-                                    LB
-                                    Exp (88)
-                                      ID: i
-                                    RB
-                                RP
+                                  Exp (48)
+                                    INT: 1
                               SEMI
-                            StmtList (89)
-                              Stmt (89)
-                                Exp (89)
-                                  Exp (89)
-                                    ID: i
-                                  ASSIGNOP
-                                  Exp (89)
-                                    Exp (89)
-                                      ID: i
-                                    PLUS
-                                    Exp (89)
-                                      INT: 1
-                                SEMI
-                          RC
-                    StmtList (91)
-                      Stmt (91)
+                        RC
+                  StmtList (50)
+                    Stmt (50)
+                      Exp (50)
+                        ID: write
+                        LP
+                        Args (50)
+                          Exp (50)
+                            ID: count
+                        RP
+                      SEMI
+                    StmtList (51)
+                      Stmt (51)
                         RETURN
-                        Exp (91)
-                          INT: 0
+                        Exp (51)
+                          ID: count
                         SEMI
-        RC
+                RC
