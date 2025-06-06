@@ -304,12 +304,12 @@ void translateDefList(Node* node) {
             Node* dec = decList->firstchild;
             while (dec) {
                 Node* varDec = dec->firstchild;
-                printf("detected vardec %s <- %s <- %s\n", varDec->name, dec->name, decList->name);
+                //printf("detected vardec %s <- %s <- %s\n", varDec->name, dec->name, decList->name);
                 
                 Type varType = NULL;
                 Node* idNode = find_node_recursive(varDec, "ID");
                 if (idNode) {
-                    printf("initializing %s\n", idNode->val.id_val);
+                    //printf("initializing %s\n", idNode->val.id_val);
                     char *varName = idNode->val.id_val;
                     pobj varObj = searchtab(table, varName);
                     if (varObj) {
@@ -318,7 +318,7 @@ void translateDefList(Node* node) {
 
                         //DEC指令生成
                         if (size > 4) {
-                            printf("gen dec for %s\n", varName);
+                            //printf("gen dec for %s\n", varName);
                             // Allocate memory for large variables
                             pInstruction decInstr = newInstruction(DEC);
                             decInstr->u.dec.op = newVariable(varName);
@@ -374,7 +374,7 @@ void translateDefList(Node* node) {
                 if (dec->firstchild->nextsib && !strcmp_safe_(dec->firstchild->nextsib->name, "ASSIGNOP")) {
                     Node* exp = dec->firstchild->nextsib->nextsib;
                     Node* idNode = find_node(varDec, "ID");
-                    printf("initializer from %s to %s\n", exp->name, idNode->val.id_val);
+                    //printf("initializer from %s to %s\n", exp->name, idNode->val.id_val);
                     if (idNode && exp) {
                         pOperand varOp = newVariable(idNode->val.id_val);
                         translateExp(exp, varOp);
@@ -653,19 +653,19 @@ void translateExp(Node* node, pOperand place) {
             
             // Check if it's really an ID node
             if (!fieldNode || strcmp_safe_(fieldNode->name, "ID") != 0) {
-                printf("Error: Expected ID node for struct field, got %s\n", 
-                    fieldNode ? fieldNode->name : "NULL");
+                //printf("Error: Expected ID node for struct field, got %s\n", 
+                    //fieldNode ? fieldNode->name : "NULL");
                 return;
             }
             
             char* fieldName = fieldNode->val.id_val;
-            printf("Field name in assignment: %s\n", fieldName); // Debug print
+            //printf("Field name in assignment: %s\n", fieldName); // Debug print
             
             // 通过符号表查找表达式的类型
             Type structType = NULL;
             if (left->firstchild->firstchild && !strcmp_safe_(left->firstchild->firstchild->name, "ID")) {
                 char* structVarName = left->firstchild->firstchild->val.id_val;
-                printf("Find struct variable: %s\n", structVarName);
+                //printf("Find struct variable: %s\n", structVarName);
                 pobj structObj = searchtab(table, structVarName);
                 if (structObj) {
                     structType = structObj->type;
@@ -674,7 +674,7 @@ void translateExp(Node* node, pOperand place) {
             
             // 计算字段偏移
             int offset = getStructFieldOffset(structType, fieldName);
-            printf("Field offset: %d\n", offset);
+            //printf("Field offset: %d\n", offset);
             
             // 计算字段地址
             pOperand fieldAddr = newTemporary();

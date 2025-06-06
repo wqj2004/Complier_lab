@@ -193,6 +193,15 @@ FieldList newFieldList(char *name, Type type)
     return newfield;
 }
 
+FieldList search_FieldList(FieldList field, char *name)
+{   
+    if (field == NULL)
+        return NULL;
+    if (!strcmp_safe_(field->name, name))
+        return field;
+    return search_FieldList(field->tail, name);
+}
+
 FieldList copyFieldList(FieldList field)
 {
     if (field == NULL)
@@ -344,6 +353,8 @@ void insert_tabobj(ptab table, pobj obj)
 }
 void delete_stack_curdepth(ptab table)
 {
+    printf("before delete\n");
+    showTable();
     if(lab3_nodel) return;
     pstack stack = table->st;
     int cur_depth = stack->cur_stack_depth;
@@ -357,6 +368,9 @@ void delete_stack_curdepth(ptab table)
     }
     stack->stacklist[cur_depth] = NULL;
     //stack->cur_stack_depth--;//////////CHANGE
+    
+    printf("after delete\n");
+    showTable();
 }
 obj *searchtab(ptab table, char *name)
 {
@@ -377,6 +391,23 @@ obj *searchtab_func(ptab table, char *name)
     return NULL;
 }
 
+
+int is_structure_def(pobj obj)
+{
+    if (obj == NULL)
+        return 0;
+    if (obj->type->kind == STRUCTURE)
+    {
+        if (!strcmp_safe_(obj->type->u.structure->name,obj->name))
+            return 1;
+        else return 0;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
 // TODO
 int objConflict(ptab table, pobj obj)
 {
@@ -387,11 +418,16 @@ int objConflict(ptab table, pobj obj)
     {
         if (!strcmp_safe_(curobj->name, obj->name))
         {
-            if (curobj->type->kind == STRUCTURE || obj->type->kind == STRUCTURE)
+            
+            // if ((curobj->type->kind == STRUCTURE && is_structure_def(curobj)) || (obj->type->kind == STRUCTURE && is_structure_def(obj)))
+            // {
+            //     return 1;
+            // }
+            if ((curobj->type->kind == STRUCTURE && is_structure_def(curobj)) || (obj->type->kind == STRUCTURE && is_structure_def(obj)))
             {
                 return 1;
             }
-            else if (curobj->stack_depth == obj->stack_depth)
+            if (curobj->stack_depth == obj->stack_depth)
             {
                 if ((curobj->type->kind == FUNCTION && obj->type->kind != FUNCTION) || (curobj->type->kind != FUNCTION && obj->type->kind == FUNCTION))
                 {
@@ -408,7 +444,7 @@ int objConflict(ptab table, pobj obj)
 
 void showTable()
 {
-    if(!debuger)return;
+    //if(!debuger)return;
     phash hashtab = table->hashtab;
     pobj *objlist = hashtab->hashlist;
     
@@ -423,8 +459,22 @@ void showTable()
         {
             printf("Hash index: %d\n", i);
         }
-        while (obj != NULL)
-        {   
+        while (obj != NULL)//{
+        {
+        //  {   if (strcmp(obj->name, "Data") == 0){
+        //     printf("%d\n",obj->type->kind);
+        //     fieldlist *field = obj->type->u.structure;
+        //     field = field->tail;
+        //     while(field != NULL){
+        //         printf("%s\n",field->name);
+        //         field = field->tail;
+        //     }
+             //printf("succ\n");
+            if(obj->type->kind == 2){
+                printf("Struct name: %s\n", obj->name);
+                FieldList field = obj->type->u.structure;
+                printf("Field name: %s\n", field->name);
+            }
             printf("Name: %s, Type: %d,", obj->name, obj->type->kind);
             obj = obj->hash_next;
         }
@@ -565,7 +615,7 @@ pobj FunDec(Node *node, Type rettype, Funstate isdef)
         Type funtype = newTYPE(FUNCTION, 0, NULL, rettype, isdef, node->fline);
         if (!strcmp_safe_(node->firstchild->nextsib->nextsib->name, "VarList"))
         {
-            VarList(node->firstchild->nextsib->nextsib, funtype);
+            VarList(node->firstchild->nextsib->nextsib, funtype);/////////D-1
         }
         // 添加到符号表
         funobj = newObj(node->firstchild->val.id_val, 0, funtype);
@@ -597,10 +647,13 @@ pobj FunDec(Node *node, Type rettype, Funstate isdef)
                     funobj->type->u.function.state = defined;
                 }
                 freeType(funtype);
+                funtype->u.function.state = funobj->type->u.function.state;
+                funobj->type = funtype;
                 return funobj;
+                
             }
             else
-            {
+            {   ////////////D-1 error
                 freeType(funtype);
                 funobj->type->u.function.state = isdef;
                 semanticError(DISMATCH_DECLARE_FUNC, node->fline, "Function declaration mismatch");
@@ -642,7 +695,7 @@ FieldList ParamDec(Node *node)
 
 // CompSt      : LC DefList StmtList RC
 //             ;
-void CompSt(Node *node, pobj funobj)
+void CompSt(Node *node, pobj funobj)///////////////E-3
 {
     // funobj用于指示当前的复合语句是否是函数定义的复合语句
     incStackDepth(table->st);
@@ -838,7 +891,7 @@ void Dec(Node *node, Type deftype, FieldList structfield)
     else
     {
         // VarDec ASSIGNOP Exp
-        if (structfield != NULL)
+        if (structfield != NULL)//////////////A-18.cmm
         {
             semanticError(REDEF_FIELD, node->fline, "Assignment in struct");
         }
@@ -993,6 +1046,19 @@ Type Exp(Node *node, int *plval)
             {
                 return NULL;
             }
+            else{
+                char* name = node->firstchild->nextsib->nextsib->val.id_val;
+                //printf("%s\n", name);
+                FieldList exp2_field = search_FieldList(exp1_type->u.structure->tail, name);
+                if (exp2_field == NULL)
+                {
+                    semanticError(NONEXISTFIELD, node->fline, "Field not exist");
+                    return NULL;
+                }
+                *plval = 1;
+                exp2_type = exp2_field->type;
+                return exp2_type;
+            }
         }
 
         Node *opnode = node->firstchild->nextsib;
@@ -1060,12 +1126,12 @@ Type Exp(Node *node, int *plval)
         {
             // 赋值
             // Exp ASSIGNOP Exp  a = 5
-            if (exp1_lval == 0)
+            if (exp1_lval == 0)///////E-3.cmm
             {
                 semanticError(LEFT_VAR_ASSIGN, node->fline, "Left value of assignment must be a variable");
                 return NULL;
             }
-            else if (exp1_type->kind != BASIC && exp1_type->kind != STRUCTURE)
+            else if (exp1_type->kind != BASIC && exp1_type->kind != STRUCTURE && exp1_type->kind != ARRAY)
             {
                 semanticError(LEFT_VAR_ASSIGN, node->fline, "Left value of assignment must be a variable");
                 return NULL;
@@ -1367,7 +1433,7 @@ int getStructFieldOffset(Type structType, char* fieldName) {
     // 遍历字段计算偏移
     while (field != NULL) {
         if (!strcmp_safe_(field->name, fieldName)) {
-            printf("找到字段 %s，偏移量为 %d\n", fieldName, offset);
+            //printf("找到字段 %s，偏移量为 %d\n", fieldName, offset);
             return offset;
         }
         
@@ -1376,7 +1442,7 @@ int getStructFieldOffset(Type structType, char* fieldName) {
         field = field->tail;
     }
     
-    printf("未找到字段 %s\n", fieldName);
+    //printf("未找到字段 %s\n", fieldName);
     return -1; // 未找到字段
 }
 

@@ -1,0 +1,204 @@
+Program (1)
+  ExtDefList (1)
+    ExtDef (1)
+      Specifier (1)
+        TYPE: int
+      FunDec (1)
+        ID: hanoi
+        LP
+        VarList (1)
+          ParamDec (1)
+            Specifier (1)
+              TYPE: int
+            VarDec (1)
+              ID: n
+          COMMA
+          VarList (1)
+            ParamDec (1)
+              Specifier (1)
+                TYPE: int
+              VarDec (1)
+                ID: p1
+            COMMA
+            VarList (1)
+              ParamDec (1)
+                Specifier (1)
+                  TYPE: int
+                VarDec (1)
+                  ID: p2
+              COMMA
+              VarList (1)
+                ParamDec (1)
+                  Specifier (1)
+                    TYPE: int
+                  VarDec (1)
+                    ID: p3
+        RP
+      CompSt (1)
+        LC
+        StmtList (2)
+          Stmt (2)
+            IF
+            LP
+            Exp (2)
+              Exp (2)
+                ID: n
+              RELOP
+              Exp (2)
+                INT: 1
+            RP
+            Stmt (2)
+              CompSt (2)
+                LC
+                StmtList (3)
+                  Stmt (3)
+                    Exp (3)
+                      ID: write
+                      LP
+                      Args (3)
+                        Exp (3)
+                          Exp (3)
+                            Exp (3)
+                              ID: p1
+                            STAR
+                            Exp (3)
+                              INT: 1000000
+                          PLUS
+                          Exp (3)
+                            ID: p3
+                      RP
+                    SEMI
+                RC
+            ELSE
+            Stmt (4)
+              CompSt (4)
+                LC
+                StmtList (5)
+                  Stmt (5)
+                    Exp (5)
+                      ID: hanoi
+                      LP
+                      Args (5)
+                        Exp (5)
+                          Exp (5)
+                            ID: n
+                          MINUS
+                          Exp (5)
+                            INT: 1
+                        COMMA
+                        Args (5)
+                          Exp (5)
+                            ID: p1
+                          COMMA
+                          Args (5)
+                            Exp (5)
+                              ID: p3
+                            COMMA
+                            Args (5)
+                              Exp (5)
+                                ID: p2
+                      RP
+                    SEMI
+                  StmtList (6)
+                    Stmt (6)
+                      Exp (6)
+                        ID: write
+                        LP
+                        Args (6)
+                          Exp (6)
+                            Exp (6)
+                              Exp (6)
+                                ID: p1
+                              STAR
+                              Exp (6)
+                                INT: 1000000
+                            PLUS
+                            Exp (6)
+                              ID: p3
+                        RP
+                      SEMI
+                    StmtList (7)
+                      Stmt (7)
+                        Exp (7)
+                          ID: hanoi
+                          LP
+                          Args (7)
+                            Exp (7)
+                              Exp (7)
+                                ID: n
+                              MINUS
+                              Exp (7)
+                                INT: 1
+                            COMMA
+                            Args (7)
+                              Exp (7)
+                                ID: p2
+                              COMMA
+                              Args (7)
+                                Exp (7)
+                                  ID: p1
+                                COMMA
+                                Args (7)
+                                  Exp (7)
+                                    ID: p3
+                          RP
+                        SEMI
+                RC
+          StmtList (9)
+            Stmt (9)
+              RETURN
+              Exp (9)
+                INT: 0
+              SEMI
+        RC
+    ExtDefList (11)
+      ExtDef (11)
+        Specifier (11)
+          TYPE: int
+        FunDec (11)
+          ID: main
+          LP
+          RP
+        CompSt (11)
+          LC
+          DefList (12)
+            Def (12)
+              Specifier (12)
+                TYPE: int
+              DecList (12)
+                Dec (12)
+                  VarDec (12)
+                    ID: sum
+                  ASSIGNOP
+                  Exp (12)
+                    INT: 3
+              SEMI
+          StmtList (13)
+            Stmt (13)
+              Exp (13)
+                ID: hanoi
+                LP
+                Args (13)
+                  Exp (13)
+                    ID: sum
+                  COMMA
+                  Args (13)
+                    Exp (13)
+                      INT: 1
+                    COMMA
+                    Args (13)
+                      Exp (13)
+                        INT: 2
+                      COMMA
+                      Args (13)
+                        Exp (13)
+                          INT: 3
+                RP
+              SEMI
+            StmtList (14)
+              Stmt (14)
+                RETURN
+                Exp (14)
+                  INT: 0
+                SEMI
+          RC

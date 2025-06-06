@@ -42,29 +42,10 @@ debug:
 # 定义的一些伪目标
 .PHONY: clean test pack produce clean-pack
 test:
-	./parser ../Tests/test1.cmm
-	./parser ../Tests/test2.cmm
-	./parser ../Tests/test3.cmm
-	./parser ../Tests/test4.cmm
-	./parser ../Tests/test5.cmm
-	./parser ../Tests/test6.cmm
-	./parser ../Tests/test7.cmm
-	./parser ../Tests/test8.cmm
-	./parser ../Tests/test9.cmm
-	./parser ../Tests/test10.cmm
-	./parser ../Tests/test11.cmm
-	./parser ../Tests/test12.cmm
-	./parser ../Tests/test13.cmm
-	./parser ../Tests/test14.cmm
-	./parser ../Tests/test15.cmm
-	./parser ../Tests/test16.cmm
-	./parser ../Tests/test17.cmm
-	./parser ../Tests/test18.cmm
-	./parser ../Tests/test19.cmm
-	./parser ../Tests/test20.cmm
-	./parser ../Tests/test21.cmm
-	./parser ../Tests/test22.cmm
-	./parser ../Tests/test23.cmm
+	./parser ../Tests/A-18.cmm
+	./parser ../Tests/D-1.cmm
+	./parser ../Tests/E-2.cmm
+	./parser ../Tests/E-3.cmm
 
 clean:
 	rm -f parser lex.yy.c syntax.tab.c syntax.tab.h syntax.output

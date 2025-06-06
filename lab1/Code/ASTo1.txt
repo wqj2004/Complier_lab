@@ -1,0 +1,312 @@
+Program (1)
+  ExtDefList (1)
+    ExtDef (1)
+      Specifier (1)
+        StructSpecifier (1)
+          STRUCT
+          OptTag (1)
+            ID: Coordinate
+          LC
+          DefList (2)
+            Def (2)
+              Specifier (2)
+                TYPE: int
+              DecList (2)
+                Dec (2)
+                  VarDec (2)
+                    ID: x
+              SEMI
+            DefList (3)
+              Def (3)
+                Specifier (3)
+                  TYPE: int
+                DecList (3)
+                  Dec (3)
+                    VarDec (3)
+                      ID: y
+                SEMI
+          RC
+      SEMI
+    ExtDefList (6)
+      ExtDef (6)
+        Specifier (6)
+          StructSpecifier (6)
+            STRUCT
+            OptTag (6)
+              ID: Area
+            LC
+            DefList (7)
+              Def (7)
+                Specifier (7)
+                  TYPE: float
+                DecList (7)
+                  Dec (7)
+                    VarDec (7)
+                      ID: area
+                SEMI
+            RC
+        SEMI
+      ExtDefList (10)
+        ExtDef (10)
+          Specifier (10)
+            TYPE: int
+          FunDec (10)
+            ID: calculate_area
+            LP
+            VarList (10)
+              ParamDec (10)
+                Specifier (10)
+                  TYPE: int
+                VarDec (10)
+                  ID: radius
+            RP
+          CompSt (10)
+            LC
+            StmtList (11)
+              Stmt (11)
+                IF
+                LP
+                Exp (11)
+                  Exp (11)
+                    ID: radius
+                  RELOP
+                  Exp (11)
+                    INT: 0
+                RP
+                Stmt (11)
+                  CompSt (11)
+                    LC
+                    StmtList (12)
+                      Stmt (12)
+                        RETURN
+                        Exp (12)
+                          ID: radius
+                        SEMI
+                    RC
+              StmtList (14)
+                Stmt (14)
+                  RETURN
+                  Exp (14)
+                    INT: 0
+                  SEMI
+            RC
+        ExtDefList (17)
+          ExtDef (17)
+            Specifier (17)
+              TYPE: int
+            FunDec (17)
+              ID: main
+              LP
+              RP
+            CompSt (17)
+              LC
+              DefList (18)
+                Def (18)
+                  Specifier (18)
+                    TYPE: int
+                  DecList (18)
+                    Dec (18)
+                      VarDec (18)
+                        ID: counter
+                      ASSIGNOP
+                      Exp (18)
+                        INT: 0
+                  SEMI
+                DefList (19)
+                  Def (19)
+                    Specifier (19)
+                      TYPE: int
+                    DecList (19)
+                      Dec (19)
+                        VarDec (19)
+                          ID: total
+                        ASSIGNOP
+                        Exp (19)
+                          INT: 0
+                    SEMI
+                  DefList (21)
+                    Def (21)
+                      Specifier (21)
+                        StructSpecifier (21)
+                          STRUCT
+                          Tag (21)
+                            ID: Coordinate
+                      DecList (21)
+                        Dec (21)
+                          VarDec (21)
+                            ID: pos
+                      SEMI
+                    DefList (22)
+                      Def (22)
+                        Specifier (22)
+                          TYPE: int
+                        DecList (22)
+                          Dec (22)
+                            VarDec (22)
+                              VarDec (22)
+                                ID: data
+                              LB
+                              INT: 3
+                              RB
+                        SEMI
+              StmtList (24)
+                Stmt (24)
+                  CompSt (24)
+                    LC
+                    DefList (25)
+                      Def (25)
+                        Specifier (25)
+                          StructSpecifier (25)
+                            STRUCT
+                            Tag (25)
+                              ID: Area
+                        DecList (25)
+                          Dec (25)
+                            VarDec (25)
+                              ID: pos
+                        SEMI
+                      DefList (26)
+                        Def (26)
+                          Specifier (26)
+                            TYPE: int
+                          DecList (26)
+                            Dec (26)
+                              VarDec (26)
+                                ID: counter
+                          SEMI
+                        DefList (27)
+                          Def (27)
+                            Specifier (27)
+                              TYPE: float
+                            DecList (27)
+                              Dec (27)
+                                VarDec (27)
+                                  ID: total
+                            SEMI
+                          DefList (28)
+                            Def (28)
+                              Specifier (28)
+                                TYPE: float
+                              DecList (28)
+                                Dec (28)
+                                  VarDec (28)
+                                    VarDec (28)
+                                      ID: data
+                                    LB
+                                    INT: 10
+                                    RB
+                              SEMI
+                    StmtList (30)
+                      Stmt (30)
+                        Exp (30)
+                          Exp (30)
+                            ID: total
+                          ASSIGNOP
+                          Exp (30)
+                            ID: calculate_area
+                            LP
+                            Args (30)
+                              Exp (30)
+                                ID: counter
+                            RP
+                        SEMI
+                      StmtList (32)
+                        Stmt (32)
+                          WHILE
+                          LP
+                          Exp (32)
+                            Exp (32)
+                              ID: counter
+                            RELOP
+                            Exp (32)
+                              INT: 0
+                          RP
+                          Stmt (32)
+                            CompSt (32)
+                              LC
+                              DefList (33)
+                                Def (33)
+                                  Specifier (33)
+                                    TYPE: int
+                                  DecList (33)
+                                    Dec (33)
+                                      VarDec (33)
+                                        ID: data
+                                      ASSIGNOP
+                                      Exp (33)
+                                        INT: 99
+                                  SEMI
+                              StmtList (34)
+                                Stmt (34)
+                                  Exp (34)
+                                    Exp (34)
+                                      ID: counter
+                                    ASSIGNOP
+                                    Exp (34)
+                                      Exp (34)
+                                        ID: counter
+                                      MINUS
+                                      Exp (34)
+                                        INT: 1
+                                  SEMI
+                                StmtList (35)
+                                  Stmt (35)
+                                    Exp (35)
+                                      Exp (35)
+                                        Exp (35)
+                                          ID: pos
+                                        DOT
+                                        ID: x
+                                      ASSIGNOP
+                                      Exp (35)
+                                        ID: counter
+                                    SEMI
+                                  StmtList (36)
+                                    Stmt (36)
+                                      Exp (36)
+                                        Exp (36)
+                                          Exp (36)
+                                            ID: data
+                                          LB
+                                          Exp (36)
+                                            ID: counter
+                                          RB
+                                        ASSIGNOP
+                                        Exp (36)
+                                          INT: 99
+                                      SEMI
+                              RC
+                    RC
+                StmtList (40)
+                  Stmt (40)
+                    Exp (40)
+                      Exp (40)
+                        Exp (40)
+                          ID: data
+                        LB
+                        Exp (40)
+                          INT: 0
+                        RB
+                      ASSIGNOP
+                      Exp (40)
+                        INT: 99
+                    SEMI
+                  StmtList (41)
+                    Stmt (41)
+                      Exp (41)
+                        Exp (41)
+                          Exp (41)
+                            ID: pos
+                          DOT
+                          ID: x
+                        ASSIGNOP
+                        Exp (41)
+                          INT: 99
+                      SEMI
+                    StmtList (42)
+                      Stmt (42)
+                        RETURN
+                        Exp (42)
+                          INT: 0
+                        SEMI
+              RC
